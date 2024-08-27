@@ -8,6 +8,7 @@ on:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
     paths:
       - 'site/**'
+  workflow_dispatch:
 
 jobs:
   build:
