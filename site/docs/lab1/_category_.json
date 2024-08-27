@@ -1,0 +1,8 @@
+{
+  "label": "Lab 1 - Instrument, collect and export",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Understand the key telemetry signals, and application instrumentation."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "label": "Lab 2 - Manual instrumentation and collection",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Add code-based instrumentation and deploy a collector."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "label": "Lab 3 - Missions",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Workflows built around OpenTelemetry in Grafana Cloud."
+  }
+}
