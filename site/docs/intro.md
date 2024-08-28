@@ -13,7 +13,7 @@ Let's make sure you're all set up.
 
 Prefer reading in light mode, or dark mode? You can pick either.
 
-Toggle to your preferred color mode by clicking on the icon in the top right of the page.
+Toggle to your preferred color mode by clicking on the Light icon in the top right corner ⮥
 
 ## What you'll need
 

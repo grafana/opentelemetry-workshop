@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# 1.2. Instrument the application
+# 1.2. Zero-code OpenTelemetry
 
 In this lab we'll look at how to add zero-code instrumentation to an application.
 
@@ -10,40 +10,22 @@ After you've finished this step, your architecture will look like this:
 
 ```mermaid
 flowchart LR
-    classDef app fill:#f9d71c,stroke:#333,stroke-width:1px
-    classDef agent fill:#FF6347,stroke:#333,stroke-width:1px
-    classDef alloy fill:#FF6347,stroke:#333,stroke-width:1px
-    classDef output fill:#87CEEB,stroke:#333,stroke-width:1px
-    classDef gc fill:#32CD32,stroke:#333,stroke-width:1px
+    classDef default stroke:#999,stroke-width:2px;
 
-    A["<div style='padding: 0.5rem;'><i class='fa fa-dice fa-lg'></i> Rolldice app</div>"]:::app
-    O["<div><i class='fa fa-bolt fa-lg'></i> OTel Java Agent</div>"]:::agent
-    LL["<div><i class='fa fa-bolt fa-lg'></i> Grafana Alloy</div>"]:::alloy
-    B["<div style='width: 100px'><i class='fa fa-file-alt fa-lg'></i> Logs</div>"]:::output
-    C["<div style='width: 100px'><i class='fa fa-tachometer fa-lg'></i> Metrics</div>"]:::output
-    D["<div style='width: 100px'><i class='fa fa-project-diagram fa-lg'></i> Traces</div>"]:::output
-    E["<div style='width: 150px'><i class='fa fa-cloud fa-lg'></i> Grafana Cloud</div>"]:::gc
+    DemoApp("<div style='padding: 1rem'><i class='fa fa-dice fa-lg'></i><br/>Rolldice app</div>")
+    OtelAgent("<div style='padding: 1rem'><i class='fa fa-bolt fa-lg'></i><br/>OTel Java Agent</div>")
+    %% OtelAgent("OTel Java Agent")
+    Alloy("<div style='padding: 1rem'><i class='fa fa-bolt fa-lg'></i><br/>Grafana Alloy</div>")
+    GrafanaCloud("<div style='padding: 1rem'><i class='fa fa-cloud fa-lg'></i><br/>Grafana Cloud</div>")
 
-    A --> O
-    O --> B
-    O --> C
-    O --> D
-    B --> LL
-    C --> LL
-    D --> LL
-    LL --> E
+    DemoApp --> OtelAgent
+    OtelAgent -->|Metrics, Logs, Traces<br/>OTLP| Alloy
+    Alloy -->|OTLP| GrafanaCloud
 
-    style A fill:#f9d71c,stroke:#333,stroke-width:4px
-    style O fill:#FF6347,stroke:#333,stroke-width:4px
-    style E fill:#32CD32,stroke:#333,stroke-width:4px
-
-    subgraph Java Runtime
-        A
-        O
-    end
-
-    subgraph Cloud
-        E
+    subgraph Your Local Environment
+        DemoApp
+        OtelAgent
+        Alloy
     end
 ```
 
@@ -84,7 +66,8 @@ Let's get the appropriate configuration file that we need for Alloy:
 
 1.  **Copy the Alloy configuration.** Scroll down the page to find some generated Alloy configuration.
 
-    The configuration looks like this:
+    <details>
+        <summary>See example Alloy configuration</summary>
 
     ```
     otelcol.receiver.otlp "default" {
@@ -162,7 +145,10 @@ Let's get the appropriate configuration file that we need for Alloy:
     }  
     ```
 
-## Step 3: Configure and run Alloy
+
+    </details>
+
+## Step 3: Configure and run Grafana Alloy
 
 1.  In your development environment, create a new file named `config.alloy`.
 
@@ -174,7 +160,7 @@ Let's get the appropriate configuration file that we need for Alloy:
     alloy run config.alloy
     ```
 
-    You should see Alloy start up, and write logs to the console.
+    You should see Alloy start up, and begin to write its logs to the console.
 
 Congratulations! You've just made the first step to collecting and exporting OpenTelemetry signals.
 
@@ -182,9 +168,9 @@ Congratulations! You've just made the first step to collecting and exporting Ope
 
 For the purposes of this workshop, and to keep things simple, you're running a standalone instance of Grafana Alloy, inside your development environment.
 
-But in production, you have a range of options available to you, like Grafana's Kubernetes Monitoring Helm chart, which deploys Alloy to collect OTLP signals **and** also telemetry from your underlying Kubernetes nodes.
+But in production, you have a range of options available to you to deploy Alloy, such as Grafana's Kubernetes Monitoring Helm chart, which deploys Alloy to collect OTLP signals **and** also telemetry from your underlying Kubernetes nodes.
 
-See [the documentation](https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/collector/grafana-alloy-kubernetes/) for more information. 
+See [the Alloy documentation](https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/collector/grafana-alloy-kubernetes/) for more information. 
 
 :::
 
@@ -199,22 +185,17 @@ Complete the following steps to add zero-code instrumentation to your applicatio
 
 1.  Open the file `./run.sh`.
 
-1.  Think of a name for your service. Service Name is a key OpenTelemetry attribute and will be used to distinguish yours from the others in the lab.
+1.  Think of a namespace for your service. Namespace is one attribute that we can use to distinguish your applications from your fellow participants in this workshop.
 
-    Use something like:
-
-    - `rolldice-john`
-    - `rolldice-45311`
-
-    Or a name of your choice. The name should not contain any spaces.
+    You might use something like: `john` or `cthulhu`.
 
     You'll need to remember the name you chose, as we'll use it in the next lab module.
 
 1.  Before the last line, insert these lines:
 
     ```shell
-    export SERVICE_NAME="<your service name>"
-    export OTEL_RESOURCE_ATTRIBUTES="service.name=${SERVICE_NAME},deployment.environment=lab,service.version=1.0-demo,service.instance.id=${HOSTNAME}:8080"
+    export NAMESPACE="<your name>"
+    export OTEL_RESOURCE_ATTRIBUTES="service.name=rolldice,deployment.environment=lab,service.namespace=${NAMESPACE},service.version=1.0-demo,service.instance.id=${HOSTNAME}:8080"
     export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
     export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
     ```

@@ -127,6 +127,11 @@ const config = {
         darkTheme: prismThemes.dracula,
         additionalLanguages: ['docker'],
       },
+      mermaid: {
+        options: {
+          fontFamily: 'system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
+        }
+      }
     }),
 };
 

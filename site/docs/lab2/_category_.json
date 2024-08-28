@@ -1,8 +1,8 @@
 {
-  "label": "Lab 2 - Manual instrumentation and collection",
+  "label": "Lab 2 - Explore and add more services",
   "position": 1,
   "link": {
     "type": "generated-index",
-    "description": "Add code-based instrumentation and deploy a collector."
+    "description": "Instrument a second service and explore OpenTelemetry signals in Grafana."
   }
 }
