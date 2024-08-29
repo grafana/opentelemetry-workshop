@@ -1,14 +1,14 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
-# 3.1. Mission B: Enhance
+# 3.1. Mission B: Enhance instrumentation
 
-For this mission, you've been asked to add some extra contextual information to the telemetry to help the production team support the application.
+For this mission, you've been asked to add some extra contextual information to the telemetry, that will help the production team support the application.
 
 ## Part 1: Add a custom metric
 
-After the pain of the errors in Lab 2, the operations team want to be able to track how many times a game is won by either the computer or the player.
+After the pain of the errors we saw in Lab 2, the operations team want to be able to track how many times a game is won by either the computer or the player.
 
 1.  Open the `server.js` file.
 
