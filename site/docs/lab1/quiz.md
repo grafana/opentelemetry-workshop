@@ -106,7 +106,7 @@ export const questions = [
   },
   {
     question_text:
-      "Which attribute in OpenTelemetry uniquely identifies an instance of a service?",
+      "Which attribute in OpenTelemetry should be used to uniquely identify an instance of a service?",
     explanation:
       "In OpenTelemetry, the 'service.instance.id' attribute uniquely identifies an instance of a service.",
     choices: [

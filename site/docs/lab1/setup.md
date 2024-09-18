@@ -10,7 +10,7 @@ You've been given access to a Grafana Cloud instance for the purposes of this wo
 
 1.  Go to `https://xxxxx.grafana.net` (where `xxxxx` is a unique string that identifies your Grafana Cloud instance).
 
-1.  Click **Login with SSO**.
+1.  Click **Sign in with SSO**.
 
 1.  At the login screen, enter the **username** and **password** that you were given by your instructor.
 
@@ -24,15 +24,19 @@ You've been given access to a Grafana Cloud instance for the purposes of this wo
 
 You've also been given access to an online development environment.
 
-1.  Go to `https://xxxxx.work-shop.grafana.net` (the URL to this environment will be given by your instructor.)
+1.  Go to `https://xxxxx.work-shop.grafana.net/start` (the URL to this environment will be shared with you by your instructor.)
 
-1.  Click **Start Lab**. (Or click **Login** if you have not already logged in.)
+1.  Click **Launch OpenTelemetry Workshop**. (Or click **Login** if you have not already logged in.)
 
 1.  Verify that your lab environment looks good.
 
-1.  Change the theme as you prefer - click the _Terminal_ icon in the top right and type `theme` to find the Theme command.
+1.  Change the theme to suit your preference: click on the **Command Palette** icon located in the top right:
 
-    - Select a theme of your choice. Light? Dark? Whatever you prefer!
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><path fill-rule="evenodd" d="M1.5 3L3 1.5h18L22.5 3v18L21 22.5H3L1.5 21zM3 3v18h18V3z" clip-rule="evenodd"/><path d="M7.06 7.5L6 8.56l4.243 4.243L6 17.046l1.06 1.06L12 13.168v-.728zm4.94 9h6V18h-6z"/></g></svg>
+
+    - Then type **theme** to find the Theme command in the list.
+
+    - Then, select a theme of your choice. Light? Dark? Whatever you prefer!
 
 ## Step 3: Run the demo app
 
@@ -44,17 +48,23 @@ Let's test out this app:
 
 1.  Launch a new Terminal by going to **Terminal -> New Terminal**
 
-1.  In the terminal, type the following:
+1.  In the terminal, type the following to copy the first project into your persistent workspace:
 
     ```
-    cd rolldice
+    cp -r /opt/rolldice persisted/
+    ```
+
+1.  Then, run the following commands to start the application:
+
+    ```
+    cd persisted/rolldice
 
     ./run.sh
     ```
 
     The application starts.
 
-1.  Create a second terminal, either using the split terminal icon, or by going to **Terminal -> New Terminal**.
+1.  Create a second terminal, either using the split terminal icon (located at the right edge of the tab bar where "Terminal 1" is located), or by going to **Terminal -> New Terminal**.
 
 1.  In the second terminal, use _curl_ to make a sample request to the rolldice service:
 
@@ -62,13 +72,15 @@ Let's test out this app:
     curl localhost:8080/rolldice
     ```
 
-1.  In the first terminal, press **Ctrl+C** to stop the application.
+    The rolldice service returns a random number.
+
+1.  Change back to the first terminal by clicking on its tab, then press **Ctrl+C** to stop the application.
 
 ## Summary
 
-Right now, this demo app isn't very interesting.
+Right now, the rolldice application is rather isolated, and un-observed! 
 
-In the next lab, we'll add OpenTelemetry instrumentation to the app and start shipping signals to Grafana Cloud.
+In the next lab, we'll add OpenTelemetry instrumentation to the app, and begin shipping signals to Grafana Cloud.
 
-Click Next below to proceed to the next module in this lab.
+Click on the next module below to proceed.
 

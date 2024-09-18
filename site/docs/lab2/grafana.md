@@ -46,7 +46,7 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
 1.  Go to your Grafana instance.
 
-1.  In the side menu, navigate to **Application** to open _Application Observability_.
+1.  In the side menu, click on **Application** to open _Application Observability_.
 
     :::tip
 
@@ -54,7 +54,7 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
     :::
 
-    Application Observability will show us the service inventory - a view showing all of the services currently being monitored with OpenTelemetry Grafana Cloud.
+    Application Observability opens with the service inventory. This view shows all of the services currently sending OpenTelemetry traces, or trace-based metrics, to Grafana Cloud.
 
 1.  In the **Environment** dropdown, clear any existing entries (using the **X** button) and choose **lab** from the list.
 
@@ -62,17 +62,21 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
 1.  Press **+ Filter** to add a filter. Choose **service.namespace** for the attribute name, and in the "value" dropdown, choose your namespace from the list.
 
-    :::info
+    :::tip
 
-    If you don't see your namespace in the service inventory, wait a few minutes. Applications appear in the service inventory once span metrics have begun to be generated.
+    If you don't see your namespace in the service inventory, wait a few minutes. Applications appear in the service inventory once span metric generation has begun.
 
     :::
 
-    :::tip
+    :::info[Why semantic conventions are important]
 
-    We're using the power of OpenTelemetry's _semantic conventions_ here, which help us slice and dice our telemetry so that we can zoom into the exact service instances that we want to view.
+    We're using the power of OpenTelemetry's _semantic conventions_ here, which allow us to slice and dice our telemetry, so that we can view telemetry from only the specific service instances that we're interested in.
 
-    You could use a custom resource attribute to identify your instance of the rolldice application, but `service.namespace` is part of the semantic conventions and seems like a pretty good choice here.
+    You could use a _custom_ resource attribute to identify your instance of the rolldice application, but OpenTelemetry is at its most powerful when you follow its conventions. The attribute `service.namespace` is part of OpenTelemetry's semantic conventions, and it makes a pretty good choice for a filter here.
+
+    We've also used the attribute `deployment.environment`, which is used by Grafana Cloud Application Observability to populate its _Environment_ drop-down list.
+
+    You'll become more familiar with OpenTelemetry resource attributes as you use them.
 
     :::
 
@@ -88,9 +92,9 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
     Notice how the Service View title is `<namespace name>/<service name>` to show you exactly which namespace we're looking at.
 
-    Application Observability instantly shows us the top line stats that we need to know about our service:
+    Application Observability instantly shows us the top line stats that we would typically want to know about our service:
 
-    (SCREENSHOT of Duration/Errors/Rate)
+    ![Grafana Alloy shipping OTLP directly to Grafana Cloud](/img/appo11y_rolldice.png)
 
     In this view you can see the most important health metrics from your application.
 
@@ -100,18 +104,19 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
     - Request rate
 
-    :::tip
+    :::info[Using Application Observability with metrics from other sources]
 
     For most of the visualizations in the application, Application Observability shows metrics generated from traces (so-called _span metrics_). By default, Application Observability generates these metrics for you.
     
-    Or, if you prefer, you can use OpenTelemetry's [Span Metrics Connector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/spanmetricsconnector) instead, to generate the metrics locally and send them to Grafana Cloud.
+    If you prefer, you can use OpenTelemetry's [Span Metrics Connector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/spanmetricsconnector) instead, to generate the metrics locally, and send them to Grafana Cloud.
     
     For more information, [see the Application Observability docs](https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/manual/configure).
     :::
 
 1.  Scroll down the page, and you will find the list of operations that are being invoked on this service, along with their typical (P95) duration, error and request rates:
 
-    (SCREENSHOT OF OPERATIONS PANEL)
+    ![Operations in Application Observability](/img/appo11y_operations.png)
+
 
 ## Step 2: Explore Traces, Logs and Metrics
 
@@ -121,9 +126,9 @@ OpenTelemetry generates traces from our application, which we can explore from A
 
 ### Traces
 
-1.  Go to the Traces tab.
+1.  From the rolldice service, click on the **Traces** tab.
 
-1.  In the traces list, click on a Trace ID to open the trace view, side-by-side.
+1.  In the traces list, click on a **Trace ID** to open the trace view, side-by-side.
 
     :::tip
 
@@ -134,34 +139,43 @@ OpenTelemetry generates traces from our application, which we can explore from A
 1.  In the trace view on the right hand side of the screen, under the heading "Service & Operation", click on the **rolldice** span, then expand:
 
     - Span Attributes
+    
     - Resource Attributes
 
     Here we can see the rich set of attributes which have been automatically captured by the OpenTelemetry agent.
 
+    ![Viewing OpenTelemetry trace span attributes in Application Observability](/img/appo11y_spanattributes.png)
+
     :::info[Understanding _span_ and _resource_ attributes]
 
-    Attributes are pieces of metadata that are attached to a trace.
+    Attributes are pieces of metadata that are attached to signals:
 
-    - **Span Attributes** contain metadata relating to this part of the trace. In this example, we only have one span, which captures the HTTP interaction of our app. We can see attributes like `http.route` and `url.query` which help observe the detail of this specific request.
+    - **Span Attributes** apply to Trace Spans, and contain metadata relating to this part of the trace. In this example, we only have one span, which captures the HTTP interaction of our app. We can see attributes like `http.route` and `url.query` which help observe the detail of this specific request.
 
-    - **Resource Attributes** contain metadata relating to the server which is running our app. In this workshop, the server is your virtual development environment. We can discover attributes like `process.runtime.name` (Java), `host.name`, and so on.
+    - **Resource Attributes** contain metadata about the server where our app is running. In this workshop, the server is your virtual development environment. We can discover attributes like `process.runtime.name` (Java), `host.name`, and so on.
 
     :::
 
-1.  Looking at the span attributes, try to answer the following questions:
+1.  Attributes are a powerful part of OpenTelemetry and make it easier to answer questions about our services.
 
-    - What parameters were sent to our service in the URL query string?
+    By looking at the _span attributes_, can you answer the following questions?
+
+    - The _rolldice_ service accepts a player name in the URL's query string. A query string is the part of a URL after the question-mark, like this: `/myservice?param=value`.
+    
+        From the span attributes, can you find the player name?
 
         <details>
-        <summary>Answer</summary>
+        <summary>See the answer</summary>
 
         Look at the **span attribute** `url.query`. It should show a value like `player=John`.
         </details>
 
-    - Which version and build of Java are we running?
+    - The _rolldice_ service is written in Java. The support team would like to know which version of Java is running.
+    
+        From the resource attributes, can you find which version and build of Java are we running?
 
       <details>
-        <summary>Answer</summary>
+        <summary>See the answer</summary>
   
         Look at the **resource attribute** `process.runtime.description`.
         
@@ -171,7 +185,7 @@ OpenTelemetry generates traces from our application, which we can explore from A
     - Which browser (User-Agent) made the request to the service?
 
       <details>
-        <summary>Answer</summary>
+        <summary>See the answer</summary>
   
         Look at the **span attribute** `user_agent.original`. 
         
@@ -184,11 +198,11 @@ OpenTelemetry generates traces from our application, which we can explore from A
 
 1.  On the right-hand side, ensure the **OTLP gateway / native Loki otlp query** button is selected.
 
-    Notice how Application Observability automatically writes a Loki LogQL query to find logs for this service, narrowed down to our namespace.
+    ![Viewing OpenTelemetry logs in Application Observability](/img/appo11y_logs.png)
+
+    Application Observability writes and executes a Loki LogQL query, to find logs for this service, narrowed down to our namespace.
     
     Application Observability also automatically parses and formats additional context which was sent by the OpenTelemetry instrumentation, such as the **scope name** (which, in Java, holds the name of the class), the log level and the trace ID.
-
-    (TODO SCREENSHOT)
 
     <details>
       <summary>How does Grafana Cloud process your OpenTelemetry logs?</summary>
@@ -204,23 +218,37 @@ OpenTelemetry generates traces from our application, which we can explore from A
       For more information, see [the Loki documentation](https://grafana.com/docs/loki/latest/send-data/otel/).
     </details>
 
-1.  From here, expand a log line by clicking on the **&gt; (chevron)**. Scroll down, then next to _traceID_ click on the **View trace** button.
+1.  Expand an individual log line by clicking on it. 
 
-    You will be taken back to the Traces view where you can view that specific trace.
+    Grafana Cloud captures the rich value of OpenTelemetry _resource attributes_ such as `host.name`, and `process.runtime.version`, by attaching them to each log line, replacing periods with underscores.
+    
+    This provides invaluable context when troubleshooting a problem:
 
-### Metrics and runtime information
+    ![OpenTelemetry attributes in logs in Application Observability](/img/appo11y_logfields.png)
 
-As well as capturing Traces and Logs, OpenTelemetry also captures some helpful runtime metrics for our applications, right out of the box.
+1.  We can also correlate from logs immediately to traces.
+
+    Scroll down a little further, then, next to _traceID_, click on the **View trace** button.
+
+    ![Correlate from a log to a trace](/img/appo11y_traceid.png)
+
+    Then, you will be taken to the Traces tab to view that specific trace.
+
+### Runtime metrics and information
+
+As well as instrumenting Traces and Logs, OpenTelemetry auto-instrumentation also captures some helpful runtime metrics for our applications, right out of the box.
 
 These metrics can be really helpful in identifying issues which may not immediately be obvious from traces or logs.
 
-1.  Click on the **JVM** tab. This tab changes dynamically, depending on the language of the service. Here, it shows some metrics which are typical for a Java application:
+1.  Click on the **JVM** tab. This dynamic tab in Application Observability changes, depending on the language of the service. In this case, it shows some metrics which are typical for a Java application:
 
     - CPU Utilization
 
     - Heap memory utilization
 
     and more.
+
+    ![View JVM metrics in Application Observability](/img/appo11y_jvm.png)
 
 1.  Finally, at the top right of the screen, click on the **Runtime** dropdown near the service name.
 
@@ -240,7 +268,7 @@ In this lab, we've covered the following:
 
 - Viewing runtime metrics from our application
 
-Click Next to continue.
+Click on the next module to continue.
 
 
 

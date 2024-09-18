@@ -49,7 +49,23 @@ const config = {
       referrerpolicy: 'no-referrer',
     },
   ],
-  
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://rsms.me/',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'stylesheet',
+        href: 'https://rsms.me/inter/inter.css',
+      }
+    }
+  ],
+
   presets: [
     [
       'classic',
