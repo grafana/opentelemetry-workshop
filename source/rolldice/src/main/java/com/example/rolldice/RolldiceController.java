@@ -17,10 +17,10 @@ public class RolldiceController {
     @GetMapping("/rolldice")
     public String index(@RequestParam("player") Optional<String> player) {
         int result = this.getRandomNumber(1, 6);
-        if (player.isPresent()) {
-            logger.info("{} is rolling the dice: {}", player.get(), result);
+        if (player.isPresent() && !player.get().isEmpty()) {
+            logger.info("Player {} is rolling the dice, result: {}", player.get(), result);
         } else {
-            logger.info("Anonymous player is rolling the dice: {}", result);
+            logger.info("Anonymous player is rolling the dice, result: {}", result);
         }
         return Integer.toString(result);
     }
