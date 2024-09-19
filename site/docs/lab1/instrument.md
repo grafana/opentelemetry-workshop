@@ -224,7 +224,7 @@ Complete the following steps to add zero-code instrumentation to your applicatio
     | service.instance.id | (your IDE's hostname) | The value of this attribute uniquely identifies your instance, which is useful if there are other instances of the app running. We use the **hostname**, which in this lab environment, is unique and persists for the lifetime of your IDE session. |
     | service.namespace | (your choice of name) | This allows us to distinguish your set of application(s) from the others in the same **environment**. So, when you have several applications running, you will be able to group them together more easily. |
 
-    :::tip
+    :::opentelemetry-tip
 
     OpenTelemetry components often use **environment variables** for configuration. The default value for  `OTEL_EXPORTER_OTLP_ENDPOINT` assumes that you want to send telemetry to an OpenTelemetry collector on `localhost`. We could omit this environment variable entirely, but we're including it explicitly here, to make it clear what's happening. 
     

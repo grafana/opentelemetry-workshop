@@ -19,6 +19,7 @@
   font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
 
   --ifm-font-family-base: Inter, sans-serif;
+  --otel-admonition-background: var(--ifm-color-secondary-light);
 }
 
 @supports (font-variation-settings: normal) {
@@ -36,6 +37,8 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+  --otel-admonition-background: var(--ifm-color-secondary-contrast-background);
 }
 
 .unique-tabs .tabs__item {
@@ -77,4 +80,28 @@
   counter-increment: docs-counter;
   position: relative;
   line-height: 24px;
+}
+
+.admonition-otel {
+  display: flex;
+  border-radius: var(--ifm-alert-border-radius);
+  /* background-color: var(--ifm-color-secondary-light); */
+  background-color: var(--otel-admonition-background);
+  padding: var(--ifm-alert-padding-vertical) var(--ifm-alert-padding-horizontal);
+  align-items: center;
+}
+
+.admonition-otel .icon-container {
+  max-width: 100px;
+  padding-right: var(--ifm-alert-padding-horizontal);
+}
+
+.admonition-otel .heading {
+  font: var(--ifm-heading-font-weight) var(--ifm-h5-font-size) / var(--ifm-heading-line-height) var(--ifm-heading-font-family);
+  text-transform: uppercase;  
+  margin-bottom: 0.3rem;
+}
+
+.admonition-otel .content > :last-child {
+  margin-bottom: 0;
 }

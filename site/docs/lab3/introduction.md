@@ -10,9 +10,9 @@ You can either:
 
 - Troubleshoot an issue in production
 
-- Enhance telemetry signals in your app
+- Enhance telemetry signals in _gameserver_
 
-If you're not sure which option you'd like to tackle, have a read of both of the docs and then decide!
+If you're not sure which you'd like to do, have a read of both of the docs and then decide!
 
-Click Next to read about the troubleshooting mission.
+Click to the next module to read about the troubleshooting mission.
 

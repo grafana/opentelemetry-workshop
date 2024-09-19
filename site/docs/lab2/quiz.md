@@ -13,7 +13,7 @@ export const questions = [
   {
     question_text: "Why was the gameserver throwing errors?",
     explanation:
-      "The app is brand new, and the developers hadn't implemented a code path to handle both 'computer' and 'player' winning the game.",
+      "The app is brand new, and the developers hadn't implemented a code path to handle both 'computer' and 'player' winning the game. (We'll chat to the dev team about that!)",
     choices: [
       {
         choice_text: "The 'equal score' outcome hasn't been implemented yet",

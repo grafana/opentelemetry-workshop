@@ -2,9 +2,9 @@
 sidebar_position: 2
 ---
 
-# 2.2. Instrument a second service 
+# 2.2. Add a second service 
 
-In this lab, you'll add a second service to our application, and add instrumentation to it.
+In this lab, you'll add a second service to the architecture, with OpenTelemetry instrumentation.
 
 After you complete this module, your environment will look like this:
 
@@ -14,208 +14,222 @@ flowchart LR
 
     DemoApp("<div style='padding: 1rem'><i class='fa fa-dice fa-lg'></i><br/>Rolldice app<br/>with OTel Java Agent</div>")
     Alloy("<div style='padding: 1rem'><i class='fa fa-bolt fa-lg'></i><br/>Grafana Alloy</div>")
-    ArcadeApp("<div style='padding: 1rem'>Arcade app<br/>with instrumentation</div>")
+    GameServer("<div style='padding: 1rem'>GameServer app<br/>with instrumentation</div>")
     GrafanaCloud("<div style='padding: 1rem'><i class='fa fa-cloud fa-lg'></i><br/>Grafana Cloud</div>")
 
     DemoApp -->|Metrics, Logs, Traces<br/>OTLP| Alloy
-    ArcadeApp -->|Metrics, Logs, Traces<br/>OTLP| Alloy
-    ArcadeApp --> DemoApp
+    GameServer -->|Metrics, Logs, Traces<br/>OTLP| Alloy
+    GameServer --> DemoApp
     Alloy -->|OTLP| GrafanaCloud
 
     subgraph Your Local Environment
         DemoApp
-        ArcadeApp
+        GameServer
         Alloy
     end
 ```
 
 
-## Step 1: Instrument a Node.js service 
+## Step 1: Run a Go program with OpenTelemetry instrumentation
 
-Sometimes, zero-code instrumentation isn't possible, or doesn't exactly meet your needs. That's where manual instrumentation comes in.
+Some languages require you to add OpenTelemetry libraries or code into your application. Go is one example of a language that uses this approach.
 
-Some languages require you to add OpenTelemetry libraries or code into your application. JavaScript is one example of a language that requires this.
+In this part of the workshop, we will run a Go program which is instrumented with OpenTelemetry libraries. To save time, we've already added the instrumentation code for you.
 
-Let's get some hands-on experience with adding instrumentation to a JavaScript application. You'll add instrumentation to a second service called _GamesApp_. This service calls the _Rolldice_ service to get a random roll of the dice.
+This service is called _gameserver_. It runs a simple game, where a user competes with the Computer to get the highest score. The _gameserver_ service calls the _rolldice_ service (from Lab 1) to obtain two random rolls of the dice. The winner of each game is the player with the highest score.
+
+(Keen observers may spot there's something missing in these requirements. You'll find out what it is, shortly!)
+
+Let's run the _gameserver_:
 
 1.  Open your virtual development environment.
 
-1.  Firstly, stop the k6 test if it is still running: find the terminal running the k6 script, and press **Ctrl+C**.
+1.  Firstly, stop the _rolldice_ k6 test if it is still running: find the terminal running the k6 script, and press **Ctrl+C** to abort the test, then **close the terminal**.
 
-1.  Open a new terminal (**Terminal -> New Terminal**), run this:
-
-    ```
-    cd gameserver
-
-    npm install @opentelemetry/sdk-node \
-        @opentelemetry/api \
-        @opentelemetry/auto-instrumentations-node \
-        @opentelemetry/sdk-metrics \
-        @opentelemetry/sdk-trace-node \
-        @opentelemetry/exporter-trace-otlp-proto \
-        @opentelemetry/exporter-metrics-otlp-proto
-    ```
-
-1.  In the main editor window, create a new file `gameserver/instrumentation.js`, and paste in the following contents, then **Save** the file:
-
-    ```js
-    /*instrumentation.js*/
-    const opentelemetry = require('@opentelemetry/sdk-node');
-    const {
-        getNodeAutoInstrumentations,
-    } = require('@opentelemetry/auto-instrumentations-node');
-    const {
-        OTLPTraceExporter,
-    } = require('@opentelemetry/exporter-trace-otlp-proto');
-    const {
-        OTLPMetricExporter,
-    } = require('@opentelemetry/exporter-metrics-otlp-proto');
-    const { PeriodicExportingMetricReader } = require('@opentelemetry/sdk-metrics');
-    
-    const sdk = new opentelemetry.NodeSDK({
-        traceExporter: new OTLPTraceExporter(),
-        metricReader: new PeriodicExportingMetricReader({
-            exporter: new OTLPMetricExporter(),
-        }),
-        instrumentations: [getNodeAutoInstrumentations({
-            '@opentelemetry/instrumentation-fs': {
-                requireParentSpan: true,
-            },
-        })],
-    });
-    sdk.start();
-    ```
-
-1.  Open the file `gameserver/package.json` and find this line:
+1.  Open a new terminal (**Terminal -> New Terminal**), and type the following to copy the second project into your persistent workspace, then enter the new directory:
 
     ```
-        "start": "node server.js",
+    cp -r /opt/gameserver /home/project/persisted/
+
+    cd /home/project/persisted/gameserver
     ```
 
-    **Change the line** to this:
+1.  In the project Explorer tree, find the file `persisted/gameserver/otel.go` and open it, to inspect the code.
 
-    ```
-        "start": "node --require ./instrumentation.js server.js",
-    ```
+    :::tip
 
-1.  Open a new terminal.
+    If you plan to instrument your own Go application, you can follow [a step-by-step guide in the Grafana Cloud documentation][1].
 
-1.  In the terminal, change to the `gameserver` directory:
+    :::
 
-    ```
-    cd gameserver
-    ```
+    Inside `otel.go` is some _boilerplate code_ to initialize the OpenTelemetry SDK and add auto-instrumentation of packages. It sets up traces, logs and metrics exporters.
 
-1.  Set your namespace (keep the same namespace you chose for the previous lab):
+    Like the other OpenTelemetry language SDKs, it can be configured with environment variables, which we will do next.
 
-    ```
-    export NAMESPACE=(your chosen namespace)
-    ```
+1.  Let's set our OpenTelemetry _resource attributes_ for this application.
 
-    Then run the app:
+    Open the run script, `persisted/gameserver/run.sh`. **Just before** the final line (`go run .`), insert these lines, replacing `<your chosen namespace>` with the same namespace you chose in the previous lab:
 
-    ```
-    OTEL_RESOURCE_ATTRIBUTES="service.name=gameserver,service.namespace=${NAMESPACE},deployment.environment=lab" npm run start
+    ```shell
+    export NAMESPACE="<your chosen namespace>" 
+    export OTEL_RESOURCE_ATTRIBUTES="service.name=gameserver,deployment.environment=lab,service.namespace=${NAMESPACE},service.version=1.0-demo,service.instance.id=${HOSTNAME}:8080"
     ```
 
-1.  In another terminal, test the service:
+1.  In an unused terminal, change to the `persisted/gameserver` directory and run _gameserver_:
+
+    :::warning[Rolldice should still be running]
+
+    Make sure the _rolldice_ application is still running before running the next command, because the _gameserver_ app depends on it. If the _rolldice_ service has stopped, refer back to the previous Lab to see how to run it.
+
+    :::
 
     ```
-    curl -H 'Content-type: application/json' localhost:3001/play -d '{ "name": "Player1" }'
+    cd /home/project/persisted/gameserver
+
+    ./run.sh
     ```
 
 1.  Finally, let's generate some load to the service.
 
     :::tip
 
-    Ensure you have stopped the previous k6 load test before continuing. To stop the load test, find the terminal where k6 is running and press **Ctrl+C**.
+    Ensure you have stopped the k6 load test from Lab 1 before continuing. To stop the load test, find the terminal where k6 is running and press **Ctrl+C**.
 
     :::
 
-    
-    Now, start up the load test for this service:
+    Run the following commands:
 
     ```
-    cd gameserver
+    cd /home/project/persisted/gameserver
 
     k6 run loadtest.js
     ```
 
-## Step 2: Find distributed traces
+    You should see some requests arriving into the _gameserver_ from the k6 test.
 
-Now that we've added a second service to our application, we can start to see distributed traces spanning more than one service:
+By the end of this step, you should be running the complete system:
 
-1.  Go to your Grafana Cloud instance.
+- An OpenTelemetry collector (Grafana Alloy) 
 
-1.  From the main menu, go to **Explore**.
+- The _rolldice_ application (Java)
 
-1.  Pick the **Tempo** (`grafanacloud-xxxx-traces`) data source.
+- The _gameserver_ application (Go)
 
-1.  By **Query type**, click **TraceQL**. This time, instead of using the drop-downs, we'll write TraceQL, which is a succinct language for finding traces in Tempo or Grafana Cloud Traces.
+- The _gameserver_ load test script (k6)
 
-    Paste this TraceQL query in the box, replacing `<NAMESPACE>` with your chosen namespace:
+## Step 2: Explore the Service Map and Overview
 
-    ```
-    {resource.service.namespace="<NAMESPACE>" && resource.service.name="gameserver"}
-    ```
+Now that we've instrumented a second service, we will be able to visualize the interaction between these services in a Service Map.
 
-1.  Find a trace and **click on the trace ID** to open the Trace view. Now we're beginning to see some interesting traces!
-
-    - Notice how the trace also includes the request to the _rolldice_ service.
-
-    - OpenTelemetry is silently adding _Context propagation_ headers to our messages, so we can correlate these two interactions into a single trace.
-
-    Explore further in the trace. Can you find out:
-
-    - How long did the request to the "rolldice" service take?
-
-1.  Finally, go to Application Observability (from the menu , click **Application**).
+1.  In Grafana, navigate to Application Observability (from the side menu, click **Application**).
 
 1.  Using the filters, narrow down the service inventory to:
 
     - environment = lab
 
-    - service.namespace = (your name)
+    - service.namespace = (your chosen namespace)
 
-1.  Click on the Service Map.
+1.  Click on the **Service Map** tab.
 
-    You'll now see a visualization of all services and their interactions. You can see the number of requests per second to the service.
+    You'll now see a visualization of all services matching the given filters, and their interactions. This Service Map is generated from span metrics. 
 
-1.  Go to the _gameserver_ service.
+    :::tip
 
-    - See how "rolldice" is now added as a "Downstream" service
+    If you can't see both services in the service inventory list, wait a couple of moments for span metrics to be generated. And then hit the Refresh button.
 
-    - Check out "Operations" panel, which shows all the individual API operations that we're calling.
+    :::
+    
+    In the map, you can see the number of requests per second to the service:
 
-## Step 3: Investigate an error captured by OpenTelemetry
+    ![Service Map in Application Observability](/img/appo11y_servicemap.png)
 
-Finally, let's check the health of our service. 
+1.  Click on the **gameserver** circle in the map, then click on **Service Overview**.
 
-OpenTelemetry instrumentation is able to mark traces with a status of **error** when it detects that an error has happened in an instrumented service. That makes it a lot easier to identify failed requests to our services, and in Grafana we can easily drill down to find out the root cause.
+    Now we can see how this service is running. In the _Downstream_ panel, notice how the downstream service (_rolldice_ from Lab 1) is shown.
 
-1.  In Application Observability, check out the Errors panel for the _gameserver_ service.
+    ![gameserver Service Overview in Application Observability](/img/appo11y_gameserveroverview.png)
 
-    Notice how we seem to have some errors.
+You'll notice that our service seems to be throwing errors. We'll look at those next.
 
-    (SCREENSHOT OF ERRORS IN SERVICE ERROR PANEL)
 
-1.  Let's check out the errors. In the the top right of the Errors panel, click on the **Traces** button. This shows all of the traces for the given time period which have a status of `error`.
+## Step 3: Diagnose an error
 
-1.  **Click on a trace**. Can you figure out why there's an error? Expand the spans within the trace to learn more.
+Let's zoom in on these errors that our service seems to be experiencing.
 
-    Remember what you discover - you can check your hypothesis with the quiz at the end of this lab.
+OpenTelemetry auto-instrumentation can mark traces with a status of **error** when it detects that an error is being returned by the service. That makes it a lot easier to identify failed requests to our services, and in Grafana we can easily correlate to find out the root cause.
+
+1.  From the Service Overview screen for _gameserver_, find the **Errors** graph, and click on the **Traces** button to show errored traces.
+
+    Application Observability navigates to the _Traces_ tab and lists traces which were marked with a `status` of `error`, in the selected time frame.
+
+    ![Error traces in Application Observability](/img/appo11y_errortraces.png)
+
+    This is the underlying TraceQL query that Application Observability is using:
+
+    ```
+    {resource.service.name="gameserver" 
+        && resource.service.namespace="<NAMESPACE>" 
+        && status=error}
+    ```
+
+    :::opentelemetry-tip
+
+    Did you notice the OpenTelemetry attributes within this TraceQL query? In this query, we're referencing _resource attributes_, by adding the `resource.` prefix to the attribute names.
+    
+    For example: `resource.service.namespace`, and `resource.service.name`.
+    
+    :::
+
+1.  Find a trace and **click on the trace ID** to open the Trace view. Now we're beginning to see some interesting traces!
+
+    The _gameserver_ application makes two calls to _rolldice_ to fetch a random number, so it can calculate a result for the game.
+
+    The trace visualizes the two calls to the _rolldice_ service in a different color:
+
+    ![A trace with two calls](/img/appo11y_gameservertrace.png)
+
+1.  We viewed this trace because it had an error. Let's find out the root cause.
+
+    Click on one of the errored span names to expand the trace. Can you find out why the service errored?
+
+    You can also click **Logs for this span** to view logs, if you want to see the relevant logs for this span.
+
+    **Q:** Why do you think this service is throwing an error? You can check your hypothesis with the quiz at the end of this lab.
+
+1.  Once you've diagnosed the error, can you use the trace information to find out the answer to these questions:
+
+    - Which OpenTelemetry instrumentation libraries (name and version) were used to create these traces?
+
+        <details>
+        <summary>See how to find the answer</summary>
+
+        Look at the **text in the header of each span**. It should have a _Library Name_ and _Library Version_ field. e.g.:
+
+        - go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp (for Go's HTTP capabilities)
+        - io.opentelemetry.tomcat-10.0 (for Java's Tomcat webserver)
+        </details>
+
+:::opentelemetry-tip
+
+OpenTelemetry's _instrumentation libraries_ lay the groundwork for telemetry. They do things like generating spans and metrics from the libraries and frameworks that you use in your app.
+
+Instrumentation libraries are available for many different frameworks and packages, such as Go's native `http` package.
+
+:::
+
 
 ## Wrapping up
 
 In this module we saw:
 
-- How to add instrumentation to a service which requires adding some code 
+- What some typical OpenTelemetry SDK boilerplate code looks like
 
-- How traces between services are correlated into the Application Observability view 
+- How to visualize a Service Map of your OpenTelemetry tracing instrumented services 
 
-- How the Service Map grows as additional services are instrumented 
+- How to navigate to errored traces, and correlate to logs to find a root cause
 
-Most importantly, we did not have to add extra support to our agent or collector. Alloy received OTLP signals from our application, and forwarded them automatically to Grafana Cloud.
+Most importantly, we didn't need to add extra configuration to our collector. Grafana Alloy received OTLP signals from our services, and forwarded them automatically to Grafana Cloud.
 
-Click Next to continue.
+Click the next module to continue.
 
+[1]: https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/instrument/go/

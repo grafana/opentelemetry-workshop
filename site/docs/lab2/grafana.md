@@ -38,7 +38,7 @@ flowchart LR
 
 Now that your application is sending OpenTelemetry signals to Grafana Cloud via Alloy, you can start to see the signals inside your Grafana instance.
 
-## Step 1: Explore Service Overview
+## Step 1: Explore Application Observability
 
 **Grafana Cloud Application Observability** is an out-of-the box solution to monitor applications and minimize MTTR (mean time to resolution). Application Observability natively supports both OpenTelemetry and Prometheus and allows you to bring together application telemetry with data from the frontend and infrastructure layers in Grafana Cloud.
 
@@ -68,7 +68,7 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
     :::
 
-    :::info[Why semantic conventions are important]
+    :::opentelemetry-tip[Why semantic conventions are important]
 
     We're using the power of OpenTelemetry's _semantic conventions_ here, which allow us to slice and dice our telemetry, so that we can view telemetry from only the specific service instances that we're interested in.
 
@@ -122,11 +122,11 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
 Traces are one of the building blocks of OpenTelemetry. Traces allow us to observe our system from the inside out.
 
-OpenTelemetry generates traces from our application, which we can explore from Application Observability.
+OpenTelemetry's instrumentation libraries generate traces from our application, which we can explore from Application Observability.
 
 ### Traces
 
-1.  From the rolldice service, click on the **Traces** tab.
+1.  From the _rolldice_ service overview, click on the **Traces** tab.
 
 1.  In the traces list, click on a **Trace ID** to open the trace view, side-by-side.
 
@@ -146,7 +146,7 @@ OpenTelemetry generates traces from our application, which we can explore from A
 
     ![Viewing OpenTelemetry trace span attributes in Application Observability](/img/appo11y_spanattributes.png)
 
-    :::info[Understanding _span_ and _resource_ attributes]
+    :::opentelemetry-tip[Understanding _span_ and _resource_ attributes]
 
     Attributes are pieces of metadata that are attached to signals:
 

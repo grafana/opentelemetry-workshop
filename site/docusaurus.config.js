@@ -78,6 +78,10 @@ const config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/grafana/opentelemetry-workshop/tree/main/docs/site/',
+          admonitions: {
+            keywords: ['opentelemetry-tip'],
+            extendDefaults: true,
+          }
         },
         blog: false, // Optional: disable the blog plugin
         theme: {
