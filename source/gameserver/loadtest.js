@@ -18,7 +18,7 @@ export default function () {
     },
   };
 
-  const res = http.post('http://localhost:3001/play', payload, params);
+  const res = http.post('http://localhost:8090/play', payload, params);
 
   // Sleep for a random time between 1-5 seconds before the next iteration
   sleep(Math.random() * 4 + 1);
