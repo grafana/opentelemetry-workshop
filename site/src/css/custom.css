@@ -56,9 +56,8 @@
 /* For tutorial steps in circles, like the docs */
 .markdown > ol > li::before {
   content: counter(docs-counter);
-  color: #454554;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   position: absolute;
   --size: 24px;
   left: calc(-1 * var(--size) - 10px);
@@ -66,7 +65,7 @@
   width: var(--size);
   height: var(--size);
   top: 0;
-  background: #e6e6ea;
+  background: var(--ifm-hover-overlay);
   border-radius: 50%;
   text-align: center;
 }
@@ -85,7 +84,6 @@
 .admonition-otel {
   display: flex;
   border-radius: var(--ifm-alert-border-radius);
-  /* background-color: var(--ifm-color-secondary-light); */
   background-color: var(--otel-admonition-background);
   padding: var(--ifm-alert-padding-vertical) var(--ifm-alert-padding-horizontal);
   align-items: center;

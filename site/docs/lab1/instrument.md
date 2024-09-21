@@ -38,8 +38,10 @@ From the OpenTelemetry documentation:
 
 > Typically, **zero-code instrumentation adds instrumentation for the libraries you’re using.** This means that requests and responses, database calls, message queue calls, and so forth are what are instrumented. Your application’s code, however, is not typically instrumented. To instrument your code, you’ll need to use code-based instrumentation.
 
-:::tip
-When you're adding OpenTelemetry to your own applications, you may need to add code-based instrumentation, to capture any extra telemetry which isn't automatically captured by the OpenTelemetry SDK for your language.
+:::opentelemetry-tip[Auto instrumentation or code instrumentation?]
+
+When you're adding OpenTelemetry to your own applications, you should start with auto instrumentation where possible. But you may need to add code-based instrumentation, to capture additional telemetry from your business logic. This is because OpenTelemetry's auto-instrumentation focuses on instrumenting libraries for your language, not necessarily your own code.
+
 :::
 
 ## Step 1: Create Alloy configuration file

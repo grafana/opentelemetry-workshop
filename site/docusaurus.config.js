@@ -77,7 +77,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/grafana/opentelemetry-workshop/tree/main/docs/site/',
+            'https://github.com/grafana/opentelemetry-workshop/tree/main/site/',
           admonitions: {
             keywords: ['opentelemetry-tip'],
             extendDefaults: true,

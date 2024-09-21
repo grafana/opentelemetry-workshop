@@ -4,8 +4,6 @@ sidebar_position: 3
 
 # End of Lab 2 Quiz
 
-TODO: Finish these questions.
-
 import Quiz from '@site/src/components/Quiz';
 
 {/* prettier-ignore */}

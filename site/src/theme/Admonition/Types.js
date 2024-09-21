@@ -1,13 +1,13 @@
 import React from 'react';
 import DefaultAdmonitionTypes from '@theme-original/Admonition/Types';
-import opentelemetryIcon from '../../../static/img/opentelemetry-icon.svg';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 function OpenTelemetryTipAdmonition(props) {
   return (
     <div className={'admonition-otel'}>
       <div className={'icon-container'}>
-        <img src="/img/opentelemetry-icon.svg" alt="Example banner" />
-      </div>
+        <img src={useBaseUrl('/img/opentelemetry-icon.svg')} alt="OpenTelemetry icon" />
+        </div>
       <div>
         <div className={'heading'}>{props.title}</div>
         <div className={'content'}>{props.children}</div>
