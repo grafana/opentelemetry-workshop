@@ -16,14 +16,27 @@ Let's add a custom OpenTelemetry metric to expose this information:
 
 1.  Open **gameserver.go** in the code editor.
 
-1.  Inside the `var()` block, add these lines to declare our counter variables:
+1.  Update the **imports** at the top of the file, to add these opentelemetry packages:
 
     ```
+    "go.opentelemetry.io/contrib/bridges/otelslog"
+    "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+    "go.opentelemetry.io/otel"
+    "go.opentelemetry.io/otel/attribute"
+    "go.opentelemetry.io/otel/codes"
+    "go.opentelemetry.io/otel/metric"
+    ```
+
+1.  Inside the `var()` block, add these lines to declare a new **meter** object and variables to hold our counters:
+
+    ```
+    meter = otel.Meter(schemaName)
+
     gamesStartedCounter   metric.Int64Counter
     gamesCompletedCounter metric.Int64Counter
     ```
 
-1.  Then, we will register two new counter metrics with the OpenTelemetry SDK. Add the following code:
+1.  Then, we will register two new counter metrics with the OpenTelemetry SDK. Add the following code after the **var** block:
 
     ```go
     func init() {
@@ -55,7 +68,7 @@ Let's add a custom OpenTelemetry metric to expose this information:
     gamesStartedCounter.Add(r.Context(), 1, metric.WithAttributes())
     ```
 
-1.  Now increment the counter **after** we've rolled the dice twice, to get the scores for the player and computer. This line will increment the counter and add an _attribute_ so that we can keep track of who won the game (which is stored in `resultCode`):
+1.  Now increment the counter **after** the call to **getResult**. The following line of code will increment the counter and add an _attribute_ so that we can keep track of who won the game (which is stored in `resultCode`):
 
     ```go
     gamesCompletedCounter.Add(r.Context(), 1, metric.WithAttributes(attribute.String("winner", resultCode)))
@@ -123,6 +136,182 @@ We can also add an attribute to a Trace. This will help to give us further conte
 1.  Q: What happens if you find all traces where `game.result` is neither PLAYER, nor COMPUTER? What results are returned?
 
 
+<details>
+    <summary>See the completed code for _gameserver.go_</summary>
+
+    If you haven't managed to complete this exercise, but you'd like to "skip to the end", then you can replace your contents of **gameserver.go** with this source file, which includes the metrics and traces instrumentation code:
+
+```go
+// gameserver.go - completed source file
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"log/slog"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+
+	"go.opentelemetry.io/contrib/bridges/otelslog"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/metric"
+)
+
+var (
+	tracer = otel.Tracer(schemaName)
+	logger = otelslog.NewLogger(schemaName)
+	meter  = otel.Meter(schemaName)
+
+	gamesStartedCounter   metric.Int64Counter
+	gamesCompletedCounter metric.Int64Counter
+)
+
+type gameRequest struct {
+	Name string `json:"name"`
+}
+
+type gameResponse struct {
+	PlayerName   string `json:"playerName"`
+	PlayerRoll   int    `json:"playerRoll"`
+	ComputerRoll int    `json:"computerRoll"`
+	Result       string `json:"result"`
+}
+
+func init() {
+	var err error
+
+	gamesStartedCounter, err = meter.Int64Counter(
+		"games.started",
+		metric.WithDescription("Number of games started"),
+		metric.WithUnit("{call}"),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	gamesCompletedCounter, err = meter.Int64Counter(
+		"games.completed",
+		metric.WithDescription("Number of games completed"),
+		metric.WithUnit("{call}"),
+	)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func gameserver(w http.ResponseWriter, r *http.Request) {
+	ctx, span := tracer.Start(r.Context(), "play") // Begin a new child span called 'play'
+	defer span.End()
+
+	gamesStartedCounter.Add(r.Context(), 1, metric.WithAttributes())
+
+	var req gameRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		logger.ErrorContext(ctx, "ERROR: Invalid request body: %v\n", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	msg := fmt.Sprintf("Player %s is playing", req.Name)
+	logger.InfoContext(ctx, msg, slog.String("player.name", req.Name))
+
+	playerRoll, err := rollDice(ctx, req.Name)
+	if err != nil {
+		logger.ErrorContext(ctx, "ERROR: Error while rolling dice: %v\n", err)
+		span.SetStatus(codes.Error, "Rolling player dice failed")
+		span.RecordError(err)
+		http.Error(w, "Error rolling dice", http.StatusInternalServerError)
+		return
+	}
+
+	computerRoll, err := rollDice(ctx, "Computer")
+	if err != nil {
+		logger.ErrorContext(ctx, "ERROR: Error while rolling dice: %v\n", err)
+		span.SetStatus(codes.Error, "Rolling computer dice failed")
+		span.RecordError(err)
+		http.Error(w, "Error rolling dice", http.StatusInternalServerError)
+		return
+	}
+
+	resultCode, resultString, err := getResult(playerRoll, computerRoll)
+	msg2 := fmt.Sprintf("Game result was %s", resultCode)
+	logger.InfoContext(ctx, msg2)
+
+	gameResultAttr := attribute.String("game.result", resultCode)
+	span.SetAttributes(gameResultAttr)
+	gamesCompletedCounter.Add(r.Context(), 1, metric.WithAttributes(attribute.String("winner", resultCode)))
+
+	if err != nil {
+		logger.ErrorContext(ctx, "ERROR: Error while calculating result")
+		span.SetStatus(codes.Error, "getResult failed")
+		span.RecordError(err)
+		http.Error(w, "Error while calculating result", http.StatusInternalServerError)
+		return
+	}
+
+	resp := gameResponse{
+		PlayerName:   req.Name,
+		PlayerRoll:   playerRoll,
+		ComputerRoll: computerRoll,
+		Result:       resultString,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
+func rollDice(ctx context.Context, name string) (int, error) {
+	baseURL := "http://localhost:8080/rolldice"
+	params := url.Values{}
+	params.Add("player", name)
+
+	url := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+
+	// Create a new client and wrap it with a span, injecting the span context into the outbound headers
+	client := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
+	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return 0, err
+	}
+
+	roll, err := strconv.Atoi(strings.TrimSpace(string(body)))
+	if err != nil || roll < 1 || roll > 6 {
+		return 0, fmt.Errorf("invalid dice roll: %s", body)
+	}
+
+	return roll, nil
+}
+
+func getResult(playerRoll, computerRoll int) (string, string, error) {
+	switch {
+	case playerRoll > computerRoll:
+		return "PLAYER", "You win!", nil
+	case playerRoll < computerRoll:
+		return "COMPUTER", "Computer wins!", nil
+	default:
+		return "", "", errors.New("No winner - unexpected tie between players!!")
+	}
+}
+```
+</details>
+
+
 ## Wrapping up
 
 In this mission, you've seen:
@@ -131,7 +320,7 @@ In this mission, you've seen:
 
 - How OpenTelemetry custom span attributes are stored and searchable in Tempo and Grafana Cloud Traces.
 
-- How an OpenTelemetry custom metric is searchable within Mimir and Grafana Cloud Metrics.
+- How to search for an OpenTelemetry custom metric using Mimir, Grafana Cloud Metrics and Grafana Explore Metrics.
 
 :::opentelemetry-tip
 
