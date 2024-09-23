@@ -13,7 +13,7 @@ flowchart LR
     classDef default stroke:#999,stroke-width:2px;
 
     DemoApp("<div style='padding: 1rem'><i class='fa fa-dice fa-lg'></i><br/>Rolldice app</div>")
-    OtelAgent("<div style='padding: 1rem'><img src='/img/opentelemetry-icon.svg' width='48' height='48'/>OTel Java Agent</div>")
+    OtelAgent("<div style='padding: 1rem'><img src='/opentelemetry-workshop/img/opentelemetry-icon.svg' width='48' height='48'/>OTel Java Agent</div>")
     %% OtelAgent("OTel Java Agent")
     Collector("<div style='padding: 1rem'><i class='fa fa-bolt fa-lg'></i><br/>Collector<br/>(Grafana Alloy)</div>")
     GrafanaCloud("<div style='padding: 1rem'><i class='fa fa-cloud fa-lg'></i><br/>Grafana Cloud</div>")
