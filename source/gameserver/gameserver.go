@@ -12,8 +12,15 @@ import (
 	"strconv"
 	"strings"
 
+	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
+)
+
+var (
+	tracer = otel.Tracer(schemaName)
+	logger = otelslog.NewLogger(schemaName)
 )
 
 type gameRequest struct {
@@ -59,7 +66,10 @@ func gameserver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := getResult(playerRoll, computerRoll)
+	resultCode, resultString, err := getResult(playerRoll, computerRoll)
+	msg2 := fmt.Sprintf("Game result was %s", resultCode)
+	logger.InfoContext(ctx, msg2)
+
 	if err != nil {
 		logger.ErrorContext(ctx, "ERROR: Error while calculating result")
 		span.SetStatus(codes.Error, "getResult failed")
@@ -72,7 +82,7 @@ func gameserver(w http.ResponseWriter, r *http.Request) {
 		PlayerName:   req.Name,
 		PlayerRoll:   playerRoll,
 		ComputerRoll: computerRoll,
-		Result:       result,
+		Result:       resultString,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -109,13 +119,13 @@ func rollDice(ctx context.Context, name string) (int, error) {
 	return roll, nil
 }
 
-func getResult(playerRoll, computerRoll int) (string, error) {
+func getResult(playerRoll, computerRoll int) (string, string, error) {
 	switch {
 	case playerRoll > computerRoll:
-		return "You win!", nil
+		return "PLAYER", "You win!", nil
 	case playerRoll < computerRoll:
-		return "Computer wins!", nil
+		return "COMPUTER", "Computer wins!", nil
 	default:
-		return "", errors.New("No winner - unexpected tie between players!!")
+		return "", "", errors.New("No winner - unexpected tie between players!!")
 	}
 }

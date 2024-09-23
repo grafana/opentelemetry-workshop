@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp"
@@ -20,11 +19,6 @@ import (
 )
 
 const schemaName = "https://github.com/grafana/opentelemetry-workshop"
-
-var (
-	tracer = otel.Tracer(schemaName)
-	logger = otelslog.NewLogger(schemaName)
-)
 
 // setupOTelSDK bootstraps the OpenTelemetry pipeline.
 // If it does not return an error, make sure to call shutdown for proper cleanup.
