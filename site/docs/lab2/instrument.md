@@ -72,7 +72,7 @@ Let's run the _gameserver_:
 
     ```shell
     export NAMESPACE="<your chosen namespace>" 
-    export OTEL_RESOURCE_ATTRIBUTES="service.name=gameserver,deployment.environment=lab,service.namespace=${NAMESPACE},service.version=1.0-demo,service.instance.id=${HOSTNAME}:8080"
+    export OTEL_RESOURCE_ATTRIBUTES="service.name=gameserver,deployment.environment=lab,service.namespace=${NAMESPACE},service.version=1.0-demo,service.instance.id=${HOSTNAME}:8090"
     ```
 
 1.  In an unused terminal, change to the `persisted/gameserver` directory and run _gameserver_:
