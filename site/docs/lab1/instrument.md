@@ -213,7 +213,7 @@ Complete the following steps to add zero-code instrumentation to your applicatio
 
     :::warning
 
-    Make sure to replace `<your name>` with the name you have chosen.
+    Make sure to replace `<your chosen namespace>` with the name you have chosen.
 
     :::
 
@@ -293,7 +293,7 @@ Now that we've configured zero-code instrumentation on our application, and are 
 
     - In the **Service Name** dropdown, select **rolldice**.
 
-    - In the **Tags** section, change **span** to **resource**. Select the **service.namespace** tag, and then enter the value **(your namespace)**.
+    - In the **Tags** section, change **span** to **resource**. Select the **service.namespace** tag, and then enter the value **(your chosen namespace)**.
 
     Click **Run query**.
 
