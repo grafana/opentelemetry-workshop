@@ -8,23 +8,23 @@ sidebar_position: 1
 
 You've been given access to a Grafana Cloud instance for the purposes of this workshop.
 
-1.  Go to `https://xxxxx.grafana.net` (where `xxxxx` is a unique string that identifies your Grafana Cloud instance).
+1.  Go to the **Grafana URL** that you have been given (usually: `https://xxxxx.grafana.net`).
 
-1.  Click **Sign in with SSO**.
+1.  If you are presented with a choice of sign-in options, click **Sign in with SSO**.
 
-1.  At the login screen, enter the **username** and **password** that you were given by your instructor.
+1.  At the _Grafana Labs Workshops_ login screen, enter the **username** (not email) and **password** that you were given by your instructor.
 
     :::info
 
-    If you didn't receive a username and password, please speak to your friendly facilitator!
+    If you didn't receive a username and password, please speak to your friendly instructor!
 
     :::
 
 ## Step 2: Log on to your IDE
 
-You've also been given access to an online development environment.
+You've also been given access to an online development environment. You'll be using this to complete the lab exercises.
 
-1.  Go to `https://xxxxx.work-shop.grafana.net/start` (the URL to this environment will be shared with you by your instructor.)
+1.  Go to the **IDE URL** that has been shared with you. 
 
 1.  Click **Launch OpenTelemetry Workshop**. (Or click **Login** if you have not already logged in.)
 
@@ -78,9 +78,9 @@ Let's test out this app:
 
 ## Summary
 
-Right now, the rolldice application is rather isolated, and un-observed! 
+You've just run the demo application that we'll use in this lab. However, the application is rather isolated, and so far un-observed! 
 
-In the next lab, we'll add OpenTelemetry instrumentation to the app, and begin shipping signals to Grafana Cloud.
+In the next lab, we'll add OpenTelemetry instrumentation to the app, and begin shipping telemetry signals to Grafana Cloud.
 
 Click on the next module below to proceed.
 

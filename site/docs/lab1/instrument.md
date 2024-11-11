@@ -44,17 +44,11 @@ When you're adding OpenTelemetry to your own applications, you should start with
 
 :::
 
-## Step 1: Create Alloy configuration file
+## Step 1: Create a Grafana Alloy configuration file
 
-Grafana Alloy is a tool for building observability pipelines, with the full power of OpenTelemetry. We will use it to collect and ship your OpenTelemetry signals to Grafana Cloud.
+Grafana Alloy is a tool for building observability pipelines, with the full power of OpenTelemetry. We will use Alloy to collect and ship your OpenTelemetry signals to Grafana Cloud.
 
-To ship OpenTelemetry directly to Grafana Cloud, you need:
-
-- Your Grafana Cloud <abbr title="OpenTelemetry Protocol">OTLP</abbr> endpoint. It looks something like this: `https://otlp-gateway-<REGION>.grafana.net/otlp`
-
-- A [Grafana Cloud access token](https://grafana.com/docs/grafana-cloud/account-management/authentication-and-permissions/access-policies/authorize-services/) which has the scopes: `metrics:write`, `logs:write`, `traces:write` and optionally `profiles:write`.
-
-Let's grab the Alloy configuration from Grafana Cloud's Integration tiles:
+Let's grab the configuration we need, using the wizard in Grafana Cloud:
 
 1.  Go to your Grafana Cloud instance.
 
@@ -64,9 +58,13 @@ Let's grab the Alloy configuration from Grafana Cloud's Integration tiles:
 
 1.  On the OpenTelemetry (OTLP) integration screen, under the heading "Use an API token", enter a token name (it can be anything you like) and click **Create token**.
 
-    Don't copy this token just yet. We'll copy the full Alloy configuration in the next step.
+    :::tip
 
-1.  Scroll down the page to find the Alloy configuration, which Grafana has automatically generated for you, and click on the **Copy to clipboard** button underneath.
+    You don't need to copy this token. Grafana Cloud generates a complete Alloy configuration for you, with the token embedded in it. We'll copy the full Alloy configuration in the next step.
+
+    :::
+
+1.  Scroll down the page to find the Alloy configuration, which Grafana has automatically generated for you. FClick on the **Copy to clipboard** button underneath.
 
     <details>
         <summary>See an example Alloy configuration</summary>
@@ -179,7 +177,9 @@ Congratulations! You've just made the first step to collecting and exporting Ope
 
 For the purposes of this workshop, and to keep things simple, you're running a standalone, foreground instance of Grafana Alloy, inside your development environment.
 
-But in production, there is a range of different ways to deploy Alloy. For example, if you're running Kubernetes, you might use Grafana's Kubernetes Monitoring Helm chart, which deploys Alloy to collect OTLP signals **and** also telemetry from your underlying Kubernetes infrastructure.
+But in production, there is a range of different ways to deploy Alloy. 
+
+For example, if you're running Kubernetes, you might use Grafana's Kubernetes Monitoring Helm chart, which deploys Alloy to collect OTLP signals **and** also telemetry from your underlying Kubernetes infrastructure.
 
 See [the Alloy documentation](https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/collector/grafana-alloy-kubernetes/) for more information. 
 
@@ -200,12 +200,14 @@ Complete the following steps to add zero-code instrumentation to your applicatio
 
     You might use something like: `johnd` or `cthulhu`.
 
-    Remember the name you chose, as we'll use the same name in Lab 2.
+    Remember the name you choose, because you'll use the same name in Lab 2.
 
-1.  In the file `run.sh`, let's configure the OpenTelemetry Java Agent. **Just before** the final line (`java -jar ...`), insert these lines, replacing `<your chosen namespace>` with your chosen namespace:
+1.  Let's configure the run script for the _rolldice_ application, to add the OpenTelemetry Java agent.
+
+    In the file `run.sh`, **just before** the final line (`java -jar ...`), insert these lines, replacing `<your chosen namespace>` with your chosen namespace:
 
     ```shell
-    export NAMESPACE="<your chosen namespace>" 
+    export NAMESPACE="<your chosen namespace>"
     export OTEL_RESOURCE_ATTRIBUTES="service.name=rolldice,deployment.environment=lab,service.namespace=${NAMESPACE},service.version=1.0-demo,service.instance.id=${HOSTNAME}:8080"
     export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
     export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
@@ -213,7 +215,9 @@ Complete the following steps to add zero-code instrumentation to your applicatio
 
     :::warning
 
-    Make sure to replace `<your chosen namespace>` with the name you have chosen.
+    Make sure that you have replaced `<your chosen namespace>` with the name you have chosen, e.g.:
+
+    `export NAMESPACE="fred"`
 
     :::
 
@@ -223,7 +227,7 @@ Complete the following steps to add zero-code instrumentation to your applicatio
     | ------------------ | ----- | ---- |
     | service.name | rolldice | This holds the the canonical name of our application |
     | deployment.environment | lab | The environment where the app is running. We've chosen "lab" here, but in the real world you might use something like "production", "test" or "development". |
-    | service.instance.id | (your IDE's hostname) | The value of this attribute uniquely identifies your instance, which is useful if there are other instances of the app running. We use the **hostname**, which in this lab environment, is unique and persists for the lifetime of your IDE session. |
+    | service.instance.id | (your IDE's hostname) | The value of this attribute uniquely identifies your instance, which is useful if there are many instances of the app running. We use the **hostname** which, in this lab environment, is unique, and persists for the lifetime of your IDE session. |
     | service.namespace | (your choice of name) | This allows us to distinguish your set of application(s) from the others in the same **environment**. So, when you have several applications running, you will be able to group them together more easily. |
 
     :::opentelemetry-tip
@@ -252,7 +256,9 @@ Complete the following steps to add zero-code instrumentation to your applicatio
 
     :::tip
 
-    If you are running through this workshop on a small screen, you might find it easier to "pop out" the terminal windows so that they are in a new browser window. 
+    If you are running through this workshop on a small screen, you might find it easier to "pop out" the terminal windows, so that they are in a new browser window and so you have more space. 
+
+    To do this, click the _Move View to Secondary Window_ icon at the top right of the terminal.
 
     :::
 
@@ -281,7 +287,9 @@ Complete the following steps to add zero-code instrumentation to your applicatio
 
 ## Step 4: Smoke test: find a Trace
 
-Now that we've configured zero-code instrumentation on our application, and are collecting OpenTelemetry signals with a collector (Grafana Alloy), let's check that everything is working by performing a quick "smoke test". Let's find a Trace in Grafana Cloud:
+We've configured zero-code OpenTelemetry instrumentation for our application, and we are collecting signals with a collector (Grafana Alloy).
+
+Now let's check that everything is working by performing a quick "smoke test". Let's find a trace in Grafana Cloud:
 
 1.  Go to your Grafana Cloud instance.
 
@@ -299,18 +307,18 @@ Now that we've configured zero-code instrumentation on our application, and are 
 
 1.  You should see OpenTelemetry traces from _rolldice_ in Grafana Cloud Traces! Each of the traces shown represents a request that was generated by our k6 load test script.
 
-At this point in the lab, you can explore more into the trace, if you like. We will explain this screen and how to observe more signals in the next section of the workshop.
+You can explore more into the trace, if you're feeling curious! In the next section of the workshop, we will explain this screen, and how to observe more signals.
 
 ## Wrapping up
 
 In this lab, you've learned how to do the following:
 
-- Generate a token and grab a full Alloy configuration from Grafana Cloud, to begin shipping OpenTelemetry
+- Generate a token and grab a complete Alloy configuration from Grafana Cloud, to begin collecting and shipping OpenTelemetry signals
 
 - Instrument an app without writing a line of code, using the OpenTelemetry agent for Java. [Read the docs here on how to instrument a JVM application](https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/instrument/jvm/).
 
-- Configure and run an OpenTelemetry collector (specifically, Grafana Alloy)
+- Configure and run an OpenTelemetry collector; specifically, Grafana Alloy.
 
-- Ship OTLP to Grafana Cloud and view some traces
+- Ship OTLP (OpenTelemetry's protocol for sending telemetry) to Grafana Cloud and view some traces
 
 Click Next to continue to the quiz for this lab.

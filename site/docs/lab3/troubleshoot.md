@@ -46,9 +46,8 @@ Tools you can use:
 | Tool | How it can help you |
 | ---- | ------------------- |
 | Application Observability | - Use the Service Inventory to quickly identify which service has a high error rate<br/>- Click into the Service to inspect the metrics in more detail<br/>- Can you drill down into erroring traces?<br/>- Do the Logs offer any information? |
-| Explore Logs | - Drill down into logs by service_name<br/>- Use filters to find error logs<br/>- Find patterns of logs |
-| Explore Metrics | |
-| Explore | - Write your own ad-hoc queries |
+| Explore Logs | - Drill down into logs by service_name<br/>- Use filters to find error logs<br/>- Find patterns of logs which might indicate there's an error |
+| Explore | - Write your own ad-hoc Loki, Tempo or Prometheus queries |
 
 If you want some more hints, click the reveal bar below:
 

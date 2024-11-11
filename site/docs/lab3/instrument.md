@@ -4,14 +4,15 @@ sidebar_position: 3
 
 # 3.1. Mission B: Enhance instrumentation
 
-For this mission, you've been asked to add some additional contextual information to the telemetry, to help the production team monitor and support the application.
+For this mission, you'll be taking your telemetry to the next level. The production team needs deeper insights into application behavior, and you'll be using the OpenTelemetry SDK to craft a _custom metric_ and _custom span attributes_ that deliver exactly what they need. 
 
-So in this part of the lab, we will use the OpenTelemetry SDK to register our own custom metric.
+Let's dive in and see how a few lines of code can transform your monitoring capabilities.
 
 ## Part 1: Add a custom metric
 
-After the pain of the errors we saw in Lab 2, the operations team want to be able to monitor how many times a game is won by either the computer or the player, or neither!
+After the pain of the errors we saw in Lab 2, the operations team wants to be able to monitor how many times a game is won by either the computer or the player, or neither.
 
+### Define and increment the custom metric
 Let's add a custom OpenTelemetry metric to expose this information:
 
 1.  Open **gameserver.go** in the code editor.
@@ -19,11 +20,7 @@ Let's add a custom OpenTelemetry metric to expose this information:
 1.  Update the **imports** at the top of the file, to add these opentelemetry packages:
 
     ```
-    "go.opentelemetry.io/contrib/bridges/otelslog"
-    "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-    "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
-    "go.opentelemetry.io/otel/codes"
     "go.opentelemetry.io/otel/metric"
     ```
 
@@ -36,7 +33,7 @@ Let's add a custom OpenTelemetry metric to expose this information:
     gamesCompletedCounter metric.Int64Counter
     ```
 
-1.  Then, we will register two new counter metrics with the OpenTelemetry SDK. Add the following code after the **var** block:
+1.  Now let's register two new counter metrics with the OpenTelemetry SDK. Add the following code after the **var ()** block and before `type gameRequest`
 
     ```go
     func init() {
@@ -62,7 +59,9 @@ Let's add a custom OpenTelemetry metric to expose this information:
     }
     ```
 
-1.  Inside the `gameserver()` function, after we've initialized the tracer (with `tracer.Start()`), add the following line. This will increment our "games.started" counter -- in other words, a counter of all games played, whether they completed successfully or not:
+1.  Now let's increment our "games started" counter. 
+
+    Inside the `gameserver()` function, after we've initialized the tracer (with `tracer.Start()`), add the following line. This will increment our "games.started" counter -- in other words, a counter of all games played, whether they completed successfully or not:
 
     ```go
     gamesStartedCounter.Add(r.Context(), 1, metric.WithAttributes())
@@ -74,9 +73,17 @@ Let's add a custom OpenTelemetry metric to expose this information:
     gamesCompletedCounter.Add(r.Context(), 1, metric.WithAttributes(attribute.String("winner", resultCode)))
     ```
 
-1.  Re-run your app and re-run the k6 load test, if it isn't running.
+1.  In a terminal, reformat your code:
+
+    ```
+    go fmt
+    ```
+
+1.  Now re-run your app, and re-run the k6 load test, if it isn't running.
 
     Wait a few moments for the new OpenTelemetry metrics to be generated and pushed to Grafana Cloud via Alloy.
+
+### Find your custom metric in Grafana
 
 1.  In Grafana, go to **Explore -> Metrics**. Click **New metric exploration**.
 
@@ -92,17 +99,17 @@ Let's add a custom OpenTelemetry metric to expose this information:
 
     :::
 
-1.  Click onto the **games_completed_total** metric and then click the **winner** label to break down the metrics by winner.
+1.  Click the **games_completed_total** metric, then click the **winner** label to see wins broken down by computer vs player.
 
-    Now we can see how our OpenTelemetry attribute has been transformed into a label in our Prometheus style metric, and we can see an instant breakdown of games won by the computer, compared to those won by the player.
+    This shows how your OpenTelemetry attribute (_winner_) appears as a Prometheus label, giving you a clear view of computer vs player victories. It almost looks like an even match!
 
     ![gameserver metrics in Explore Metrics](/img/exploremetrics_games_winners.png)
 
 
 
-## Part 2: Add an attribute to a Trace
+## Part 2: Add a custom span attribute
 
-We can also add an attribute to a Trace. This will help to give us further context about each request, and can be hugely useful.
+We can also add an attribute to a trace span. This helps to give further context about each request, which can be hugely useful in a troubleshooting situation.
 
 1.  Open the **gameserver.go** file in your Editor.
 
@@ -113,7 +120,7 @@ We can also add an attribute to a Trace. This will help to give us further conte
     span.SetAttributes(gameResultAttr)
     ```
 
-1.  Save the file and restart the program by re-running (`run.sh`).
+1.  Save the file, format your code with `go fmt`, and restart the program by re-running `run.sh`.
 
 1.  Wait a few moments for test data to be generated. Then, go to **Grafana Cloud -> Explore** and select your **Traces** data source.
 
@@ -121,11 +128,11 @@ We can also add an attribute to a Trace. This will help to give us further conte
 
     - Service name: **gameserver** 
 
-    - Tags: resource: service.namespace = (your namespace)
+    - Tags: **resource: service.namespace = (your namespace)**
 
-    Then, add another tag filter:
+    Then, click on the plus **+** button to add another tag filter:
 
-    - span: game.result = COMPUTER
+    - span: **game.result = COMPUTER**
 
 1.  Click on a Trace and then expand the span named **play**.
 
@@ -160,8 +167,9 @@ import (
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
 
@@ -173,17 +181,6 @@ var (
 	gamesStartedCounter   metric.Int64Counter
 	gamesCompletedCounter metric.Int64Counter
 )
-
-type gameRequest struct {
-	Name string `json:"name"`
-}
-
-type gameResponse struct {
-	PlayerName   string `json:"playerName"`
-	PlayerRoll   int    `json:"playerRoll"`
-	ComputerRoll int    `json:"computerRoll"`
-	Result       string `json:"result"`
-}
 
 func init() {
 	var err error
@@ -207,11 +204,21 @@ func init() {
 	}
 }
 
+type gameRequest struct {
+	Name string `json:"name"`
+}
+
+type gameResponse struct {
+	PlayerName   string `json:"playerName"`
+	PlayerRoll   int    `json:"playerRoll"`
+	ComputerRoll int    `json:"computerRoll"`
+	Result       string `json:"result"`
+}
+
 func gameserver(w http.ResponseWriter, r *http.Request) {
 	ctx, span := tracer.Start(r.Context(), "play") // Begin a new child span called 'play'
-	defer span.End()
-
 	gamesStartedCounter.Add(r.Context(), 1, metric.WithAttributes())
+	defer span.End()
 
 	var req gameRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -242,12 +249,11 @@ func gameserver(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resultCode, resultString, err := getResult(playerRoll, computerRoll)
-	msg2 := fmt.Sprintf("Game result was %s", resultCode)
-	logger.InfoContext(ctx, msg2)
-
 	gameResultAttr := attribute.String("game.result", resultCode)
 	span.SetAttributes(gameResultAttr)
 	gamesCompletedCounter.Add(r.Context(), 1, metric.WithAttributes(attribute.String("winner", resultCode)))
+	msg2 := fmt.Sprintf("Game result was %s", resultCode)
+	logger.InfoContext(ctx, msg2)
 
 	if err != nil {
 		logger.ErrorContext(ctx, "ERROR: Error while calculating result")
@@ -322,14 +328,14 @@ In this mission, you've seen:
 
 - How to search for an OpenTelemetry custom metric using Mimir, Grafana Cloud Metrics and Grafana Explore Metrics.
 
-:::opentelemetry-tip
+## You've finished! What next?
 
-Once you've begun to instrument your own applications with OpenTelemetry auto instrumentation, why not start to consider what additional context you would find valuable to add to your telemetry data. With OpenTelemetry, you have a rich set of APIs and toolkit at your disposal.
+Now that you've unlocked the power of OpenTelemetry auto instrumentation, imagine the possibilities for enriching your telemetry data with custom insights that matter most to your applications. 
 
-:::
+OpenTelemetry's rich toolkit and APIs are your gateway to crafting deeper, more meaningful observability - the kind that transforms raw data into actionable intelligence. 
 
----
+What valuable stories could your telemetry data tell with just a few lines of custom instrumentation?
 
-**Congratulations, you've completed the whole workshop!**
+
 
 [1]: https://opentelemetry.io/docs/reference/specification/compatibility/prometheus_and_openmetrics/#resource-attributes-1

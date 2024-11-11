@@ -68,11 +68,13 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
     :::
 
-    :::opentelemetry-tip[Why semantic conventions are important]
+    :::opentelemetry-tip[A quick word on semantic conventions]
 
-    We're using the power of OpenTelemetry's _semantic conventions_ here, which allow us to slice and dice our telemetry, so that we can view telemetry from only the specific service instances that we're interested in.
+    OpenTelemetry is at its most powerful when you follow its conventions.
+    
+    We're using the power of OpenTelemetry's _semantic conventions_ here, which is a list of well-known and standardized attributes that can be applied to your telemetry signals. Attributes allow us to slice and dice our telemetry, so that we can view metrics, logs and traces from only the specific service instances that we're interested in.
 
-    You could use a _custom_ resource attribute to identify your instance of the rolldice application, but OpenTelemetry is at its most powerful when you follow its conventions. The attribute `service.namespace` is part of OpenTelemetry's semantic conventions, and it makes a pretty good choice for a filter here.
+    The attribute `service.namespace` is part of OpenTelemetry's semantic conventions. We can use it to store a namespace or grouping for our service. So it makes a pretty good choice for a filter here, to identify your applications from those of your fellow lab attendees.
 
     We've also used the attribute `deployment.environment`, which is used by Grafana Cloud Application Observability to populate its _Environment_ drop-down list.
 
@@ -122,7 +124,7 @@ Application Observability gives you an opinionated view of the OpenTelemetry-ins
 
 Traces are one of the building blocks of OpenTelemetry. Traces allow us to observe our system from the inside out.
 
-OpenTelemetry's instrumentation libraries generate traces from our application, which we can explore from Application Observability.
+OpenTelemetry's instrumentation libraries generate traces from our application, which we can explore in Application Observability.
 
 ### Traces
 
@@ -152,7 +154,7 @@ OpenTelemetry's instrumentation libraries generate traces from our application, 
 
     - **Span Attributes** apply to Trace Spans, and contain metadata relating to this part of the trace. In this example, we only have one span, which captures the HTTP interaction of our app. We can see attributes like `http.route` and `url.query` which help observe the detail of this specific request.
 
-    - **Resource Attributes** contain metadata about the server where our app is running. In this workshop, the server is your virtual development environment. We can discover attributes like `process.runtime.name` (Java), `host.name`, and so on.
+    - **Resource Attributes** contain metadata about our service, and the environment where it is running. We can discover attributes like `telemetry.sdk.language` (Java), `host.name`, and so on.
 
     :::
 
@@ -170,16 +172,14 @@ OpenTelemetry's instrumentation libraries generate traces from our application, 
         Look at the **span attribute** `url.query`. It should show a value like `player=John`.
         </details>
 
-    - The _rolldice_ service is written in Java. The support team would like to know which version of Java is running.
+    - What is the architecture of the node where the service is running?
     
-        From the resource attributes, can you find which version and build of Java are we running?
-
       <details>
         <summary>See the answer</summary>
   
-        Look at the **resource attribute** `process.runtime.description`.
+        Look at the **resource attribute** `host.arch`.
         
-        It will show something like `Eclipse Adoptium OpenJDK 64-Bit Server VM 17.0.12+7` . (Eclipse Adoptium is a particular build of Java)
+        It should show `amd64`, which shows that this service is running on a 64-bit, x86 host.
       </details>
 
     - Which browser (User-Agent) made the request to the service?
@@ -209,18 +209,18 @@ OpenTelemetry's instrumentation libraries generate traces from our application, 
 
       Grafana Cloud performs some mapping on your OpenTelemetry logs:
   
-      - It tries to determine a `service_name` and uses it as a _Loki label_.
-      - It saves some other OpenTelemetry attributes as labels, like:
+      - It determines a `service_name`, and uses it as a _Loki label_.
+      - It stores some other OpenTelemetry attributes as labels, like:
           - deployment.environment (becomes `deployment_environment`)
           - service.instance.id (becomes `service_instance_id`)
-      - It saves some OpenTelemetry attributes as _Structured Metadata_, which are key-value pairs that can be attached to   log lines.
+      - It stores additional OpenTelemetry attributes as _Structured Metadata_, which are key-value pairs that are attached to log lines.
   
       For more information, see [the Loki documentation](https://grafana.com/docs/loki/latest/send-data/otel/).
     </details>
 
 1.  Expand an individual log line by clicking on it. 
 
-    Grafana Cloud captures the rich value of OpenTelemetry _resource attributes_ such as `host.name`, and `process.runtime.version`, by attaching them to each log line, replacing periods with underscores.
+    Grafana Cloud captures the rich value of OpenTelemetry _resource attributes_ such as `host.name`, and `deployment.environment`, by attaching them to each log line, replacing periods with underscores.
     
     This provides invaluable context when troubleshooting a problem:
 
@@ -232,15 +232,17 @@ OpenTelemetry's instrumentation libraries generate traces from our application, 
 
     ![Correlate from a log to a trace](/img/appo11y_traceid.png)
 
-    Then, you will be taken to the Traces tab to view that specific trace.
+    Then, you will be taken to the Traces tab to view that specific trace, where you can view more information about this request.
 
 ### Runtime metrics and information
 
-As well as instrumenting Traces and Logs, OpenTelemetry auto-instrumentation also captures some helpful runtime metrics for our applications, right out of the box.
+In addition to traces and logs, OpenTelemetry auto-instrumentation also captures some helpful runtime metrics for our applications, right out of the box.
 
-These metrics can be really helpful in identifying issues which may not immediately be obvious from traces or logs.
+These metrics can be really helpful for monitoring trends, or identifying issues which may not immediately be obvious from traces or logs.
 
-1.  Click on the **JVM** tab. This dynamic tab in Application Observability changes, depending on the language of the service. In this case, it shows some metrics which are typical for a Java application:
+1.  From Application Observability for the _rolldice_ service, click on the **JVM** tab.
+
+    This tab in Application Observability changes dynamically, depending on the language of the instrumented service. In this case, it shows some metrics which are typical for a Java application:
 
     - CPU Utilization
 
@@ -258,15 +260,15 @@ These metrics can be really helpful in identifying issues which may not immediat
 
 ## Wrapping up
 
-In this lab, we've covered the following:
+In this lab, you've learned how to do the following:
 
-- Exploring OpenTelemetry-instrumented Services in Application Observability
+- Explore OpenTelemetry-instrumented Services in Application Observability
 
-- Using resource attributes to narrow down and view signals for a specific service
+- Use resource attributes to narrow down and view signals for a specific service
 
-- Viewing and correlating between traces and logs 
+- View and correlate between traces and logs 
 
-- Viewing runtime metrics from our application
+- View runtime metrics from an application
 
 Click on the next module to continue.
 
