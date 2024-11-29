@@ -22,7 +22,7 @@ public class RolldiceController {
         } else {
             logger.info("Anonymous player is rolling the dice, result: {}", result);
         }
-        return Integer.toString(result);
+        return Integer.toString(result) + "\n";
     }
 
     public int getRandomNumber(int min, int max) {
