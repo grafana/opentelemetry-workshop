@@ -64,7 +64,7 @@ Let's grab the configuration we need, using the wizard in Grafana Cloud:
 
     :::
 
-1.  Scroll down the page to find the Alloy configuration, which Grafana has automatically generated for you. FClick on the **Copy to clipboard** button underneath.
+1.  Scroll down the page to find the Alloy configuration, which Grafana has automatically generated for you. Click on the **Copy to clipboard** button underneath.
 
     <details>
         <summary>See an example Alloy configuration</summary>
