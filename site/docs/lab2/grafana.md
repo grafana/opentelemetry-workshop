@@ -196,7 +196,7 @@ OpenTelemetry's instrumentation libraries generate traces from our application, 
 
 1.  Click on the **Logs** tab. 
 
-1.  On the right-hand side, ensure the **OTLP gateway / native Loki otlp query** button is selected.
+1.  On the right-hand side, ensure the **New Format** button is selected.
 
     ![Viewing OpenTelemetry logs in Application Observability](/img/appo11y_logs.png)
 
