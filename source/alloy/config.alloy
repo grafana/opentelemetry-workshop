@@ -125,13 +125,13 @@ otelcol.processor.batch "default" {
 otelcol.exporter.otlphttp "grafana_cloud" {
     // https://grafana.com/docs/alloy/latest/reference/components/otelcol.exporter.otlphttp/
     client {
-        endpoint = "__ENDPOINT__"
+        endpoint = sys.env("GRAFANA_CLOUD_OTLP_ENDPOINT")
         auth     = otelcol.auth.basic.grafana_cloud.handler
     }
 }
 
 otelcol.auth.basic "grafana_cloud" {
     // https://grafana.com/docs/alloy/latest/reference/components/otelcol.auth.basic/
-    username = "__USERNAME__"
-    password = "__PASSWORD__"
+    username = sys.env("GRAFANA_CLOUD_OTLP_USERNAME")
+    password = sys.env("GRAFANA_CLOUD_OTLP_PASSWORD")
 }
