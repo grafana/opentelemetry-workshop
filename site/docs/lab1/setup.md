@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# 1.1. Check your setup
+# 1.1. Initialize your environment
 
 ## Step 1: Log on to Grafana
 
@@ -48,7 +48,7 @@ Let's test out this app:
 
 1.  Launch a new Terminal by going to **Terminal -> New Terminal**
 
-1.  In the terminal, type the following to copy the first project into your persistent workspace:
+1.  In the terminal, run the following command to copy the first project into your persistent workspace:
 
     ```
     cp -r /opt/rolldice persisted/
