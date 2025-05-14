@@ -7,7 +7,7 @@ if [[ ! -f ./target/rolldice-0.0.1-SNAPSHOT.jar ]] ; then
 fi
 
 # Download the OpenTelemetry Java agent, if we haven't done it already.
-version=v2.6.0-beta.2
+version=v2.15.0
 jar=opentelemetry-javaagent.jar
 if [[ ! -f ./${jar} ]] ; then
     curl -sL https://github.com/grafana/grafana-opentelemetry-java/releases/download/${version}/grafana-opentelemetry-java.jar -o ${jar}
