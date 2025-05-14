@@ -10,6 +10,8 @@ on:
       - 'site/**'
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build:
     name: Build Docusaurus
@@ -17,10 +19,13 @@ jobs:
     defaults:
       run:
         working-directory: ./site
+    permissions:
+      contents: read # to download the repository
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 18
