@@ -145,7 +145,7 @@ const config = {
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
-        additionalLanguages: ['docker'],
+        additionalLanguages: ['docker', 'diff', 'bash'],
       },
       mermaid: {
         options: {
