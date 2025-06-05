@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# 3.1. Mission B: Enhance instrumentation
+# 3.3. Mission B: Enhance instrumentation
 
 For this mission, you'll be taking your telemetry to the next level. The production team needs deeper insights into application behavior, and you'll be using the OpenTelemetry SDK to craft a _custom metric_ and _custom span attributes_ that deliver exactly what they need. 
 
