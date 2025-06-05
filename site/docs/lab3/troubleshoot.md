@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# 3.1. Mission A: Troubleshoot
+# 3.2. Mission A: Troubleshoot
 
 For this mission, we're letting you loose in our production environment. (Honestly!)
 
