@@ -85,11 +85,11 @@ Let's add a custom OpenTelemetry metric to expose this information:
 
 ### Find your custom metric in Grafana
 
-1.  In Grafana, go to **Explore -> Metrics**. Click **New metric exploration**.
+1.  In Grafana, go to **Drilldown -> Metrics**.
 
 1.  Search for the string **game** and add a filter for **job** = **(your namespace)/gameserver**.
 
-    ![gameserver metrics in Explore Metrics](/img/exploremetrics_games.png)
+    ![gameserver metrics in Metrics Drilldown](/img/exploremetrics_games.png)
 
     :::opentelemetry-tip
 
@@ -103,7 +103,7 @@ Let's add a custom OpenTelemetry metric to expose this information:
 
     This shows how your OpenTelemetry attribute (_winner_) appears as a Prometheus label, giving you a clear view of computer vs player victories. It almost looks like an even match!
 
-    ![gameserver metrics in Explore Metrics](/img/exploremetrics_games_winners.png)
+    ![gameserver metrics in Metrics Drilldown](/img/exploremetrics_games_winners.png)
 
 
 
@@ -326,7 +326,7 @@ In this mission, you've seen:
 
 - How OpenTelemetry custom span attributes are stored and searchable in Tempo and Grafana Cloud Traces.
 
-- How to search for an OpenTelemetry custom metric using Mimir, Grafana Cloud Metrics and Grafana Explore Metrics.
+- How to search for an OpenTelemetry custom metric using Prometheus, Grafana Cloud Metrics and Metrics Drilldown.
 
 ## You've finished! What next?
 
