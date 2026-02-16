@@ -4,13 +4,13 @@ sidebar_position: 2
 
 import OtelSemconv from '@site/src/components/OtelSemconv';
 
-# 3.2. Mission A: Explore the reference environment
+# 3.2. Mission A: Investigate a fully instrumented system
 
-For this mission, we're giving you access to a fully configured **OpenTelemetry reference environment in Grafana Cloud**.
+In this mission, you'll investigate a fully instrumented microservices application, in Grafana Cloud.
 
-In this environment, we've added OpenTelemetry instrumentation to all of our services, so you can explore and see what a near real-world environment looks like in Grafana Cloud.
+This is the [OpenTelemetry Demo][1] - a production-grade system where services are exporting OpenTelemetry traces, metrics and logs. 
 
-The environment is based on the [OpenTelemetry Demo][1], a microservice-based sample application, instrumented with OpenTelemetry.
+Your goal in this mission is to use Grafana Cloud to understand the system, identity patterns, and see how OpenTelemetry's _semantic conventions_ are incredibly useful when operating at scale, across many languages and frameworks.   
 
 ![Astronomy Shop homepage](/img/oteldemo_homepage.png)
 
