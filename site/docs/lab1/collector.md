@@ -59,9 +59,9 @@ Let's fill in these variables with the connection details we will get from Grafa
 
 In this step, we will grab the endpoint, username and password you need to send your OpenTelemetry signals to Grafana Cloud:
 
-1.  Go to your Grafana Cloud instance. 
+1.  Go to your **Sandbox** Grafana Cloud instance. 
 
-1.  In the side menu, click on **Dashboards**, open the **Field Eng Otel Environment** folder, and navigate to the dashboard **Connection Details**. You can also search for the dashboard by typing "Connection Details" in the search bar.
+1.  In the side menu, click on **Dashboards**, and navigate to the dashboard **Connection Details**. You can also search for the dashboard by typing "Connection Details" in the search bar.
 
 1.  On the _Connection Details_ dashboard, copy the **OpenTelemetry (OTLP) endpoint** and paste it in the `alloy/run.sh` file, in the `GRAFANA_CLOUD_OTLP_ENDPOINT` environment variable, similar to this:
 

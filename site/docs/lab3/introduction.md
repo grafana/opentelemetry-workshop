@@ -8,11 +8,11 @@ For this third lab, we're letting you choose your own mission.
 
 You can either:
 
-- Troubleshoot an issue in production
+- Dive into a fully configured reference environment, or
 
-- Enhance telemetry signals in _gameserver_
+- Add custom telemetry to _gameserver_
 
 If you're not sure which you'd like to do, have a read of both of the docs and then decide!
 
-Click to the next module to read about the troubleshooting mission.
+Click to the next module to read about the reference environment mission.
 
