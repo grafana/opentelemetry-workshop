@@ -105,3 +105,46 @@
 .admonition-otel .content > :last-child {
   margin-bottom: 0;
 }
+
+/* OpenTelemetry semantic convention styling */
+.otel-semantic {
+  font-family: var(--ifm-font-family-monospace);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Resource attributes - blue */
+.otel-semantic--resource {
+  background-color: rgba(24, 102, 212, 0.1);
+  color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .otel-semantic--resource {
+  background-color: rgba(140, 183, 242, 0.15);
+  color: var(--ifm-color-primary-light);
+}
+
+/* Span attributes - purple */
+.otel-semantic--span {
+  background-color: rgba(147, 51, 234, 0.1);
+  color: #8b5cf6;
+}
+
+[data-theme='dark'] .otel-semantic--span {
+  background-color: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+}
+
+/* Metrics - orange */
+.otel-semantic--metric {
+  background-color: rgba(249, 115, 22, 0.1);
+  color: #ea580c;
+}
+
+[data-theme='dark'] .otel-semantic--metric {
+  background-color: rgba(251, 146, 60, 0.15);
+  color: #fdba74;
+}
