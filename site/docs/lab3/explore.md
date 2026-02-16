@@ -2,13 +2,15 @@
 sidebar_position: 2
 ---
 
-# 3.2. Mission A: Explore a reference environment
+import OtelSemconv from '@site/src/components/OtelSemconv';
+
+# 3.2. Mission A: Explore the reference environment
 
 For this mission, we're giving you access to a fully configured **OpenTelemetry reference environment in Grafana Cloud**.
 
 In this environment, we've added OpenTelemetry instrumentation to all of our services, so you can explore and see what a near real-world environment looks like in Grafana Cloud.
 
-The environment is based on the [OpenTelemetry Demo][1], which is a microservice-based distributed system, instrumented with OpenTelemetry.
+The environment is based on the [OpenTelemetry Demo][1], a microservice-based sample application, instrumented with OpenTelemetry.
 
 ![Astronomy Shop homepage](/img/oteldemo_homepage.png)
 
@@ -24,14 +26,7 @@ Log on to the environment to get started:
 
 Tools you can use to explore OpenTelemetry signals in Grafana Cloud:
 
-| Tool                      | How it can help you                                                                                                                                                                                                                          |
-|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Entity Catalog            | - Use the Entity Catalog to quickly identify which services have a high error rate<br/>- Click into the Service to inspect the metrics in more detail<br/>- Can you drill down into erroring traces?<br/>- Do the Logs offer any information? |
-| Logs Drilldown            | - Drill down into logs by service_name<br/>- Use filters to find error logs<br/>- Find patterns of logs which might indicate there's an error                                                                                                |
-| Explore                   | - Write your own Loki, Tempo or Prometheus queries                                                                                                                                                                                     |
-
-
-## Step 2: Discover services and understand the environment
+## Step 2: Understand the environment
 
 Use OpenTelemetry resource attributes to understand what's running, and where.
 
@@ -41,16 +36,15 @@ OpenTelemetry can tell us a lot about workloads, and their underlying infrastruc
 
 - **How many services are running?** (Hint: use the Entity Catalog)
 
-- **Which version of each service is running?** (Hint: find a trace use the `service.version` attribute, or use the Entity Catalog and add Service Version as a column)
+- **Which version of each service is running?** (Hint: find a trace use the <OtelSemconv>service.version</OtelSemconv> attribute, or use the Entity Catalog and add Service Version as a column)
 
 - **In which cloud provider and region are these services deployed?** (Hint: search for traces and look in the *resource attributes*, or find the information in Entity Catalog)
 
-- **What is the name of the Kubernetes node which the _checkoutservice_ is running on?**
-    - Hint: this service is called from other services. So if you are searching Drilldown Traces, don't forget to change the filter to "All spans" (not "Root spans")
+- **What is the name of the Kubernetes node which the _checkoutservice_ is running on?** (Hint: this service is called from other services, so if you are searching Drilldown Traces, don't forget to change the filter to "All spans", not "Root spans")
 
-### Explore OpenTelemetry semantic conventions
+### Use OpenTelemetry semantic conventions
 
-Semantic conventions standardise the way that this information is exported from applications, which makes it easier to visualise everything together.
+Semantic conventions standardize the way that telemetry information is exported from applications. This makes it easier to visualise everything together.
 
 1.  Navigate to **Drilldown -> Traces**.
 
@@ -58,26 +52,27 @@ Semantic conventions standardise the way that this information is exported from 
 
 3.  Open an example trace and examine the span attributes:
 
-    - **HTTP spans:** Look for `http.method`, `http.route`, `http.status_code`
-    - **RPC spans:** Find `rpc.service`, `rpc.method` (gRPC calls)
-    - **Database spans:** Check for `db.system`, `db.statement`, `db.name`
+    - **HTTP spans:** Look for <OtelSemconv type="span">http.request.method</OtelSemconv>, <OtelSemconv type="span">http.route</OtelSemconv>, <OtelSemconv type="span">http.response.status_code</OtelSemconv>
+    - **RPC spans:** Find <OtelSemconv type="span">rpc.system.name</OtelSemconv>, <OtelSemconv type="span">rpc.method</OtelSemconv>
+    - **Database spans:** Check for <OtelSemconv type="span">db.system.name</OtelSemconv>, <OtelSemconv type="span">db.query.text</OtelSemconv>, <OtelSemconv type="span">db.client.connection.pool.name</OtelSemconv>
 
-4.  Compare a couple of services -- notice how OpenTelemetry auto-instrumentation creates consistent attribute naming, irrespective of the language or framework.
+4.  Compare a couple of services. Notice how OpenTelemetry auto-instrumentation uses consistent attribute, span and metric naming, irrespective of the language or framework.
 
 5.  Navigate to **Drilldown -> Metrics**
 
 6.  Answer the question: **Which services use gRPC, and which use HTTP?**
-    - Hint: Try using Drilldown Metrics to find the known metrics for HTTP servers and gRPC servers, and note which label values you see.
-        - Remember: OpenTelemetry resource attributes are **promoted** to Prometheus labels in Grafana Cloud.
-        - Check your work by inspecting traces from each service and look at its spans - are they decorated with `rpc.service`, `rpc.method` or `http.method`, `http.route`?
+    - Hint: OpenTelemetry conventions define some standard metric names, like <OtelSemconv type="metric">http.server.request.duration</OtelSemconv> and <OtelSemconv type="metric">rpc.server.call.duration</OtelSemconv>
+    - Try using Drilldown Metrics to find the known metrics for HTTP servers and RPC servers, and note which label values you see.
+        - Remember: In Grafana Cloud, OpenTelemetry resource attributes are **promoted** to Prometheus labels.
+    - Check your analysis by inspecting traces from each service and look at its spans - are they decorated with <OtelSemconv>rpc.service</OtelSemconv>, <OtelSemconv>rpc.method</OtelSemconv> or <OtelSemconv>http.method</OtelSemconv>, <OtelSemconv>http.route</OtelSemconv>?
 
 **Why it's important:** The semantic conventions of OpenTelemetry make your telemetry super-portable and queryable, across any service, regardless of the different languages or frameworks that your teams are using.
 
-**In Grafana Cloud:** OpenTelemetry can act as an automatic catalog of your production environment. By instrumenting your workloads with OpenTelemetry, and adopting its semantic conventions, you gain a standardized way of cataloging workloads and services.  In Grafana Cloud, The **Entity Catalog** view is populated from your OpenTelemetry services and other sources.
+**In Grafana Cloud:** OpenTelemetry can act like an automatic, living catalog of your production environment. By instrumenting your workloads with OpenTelemetry, and adopting its semantic conventions, you gain a standardized inventory of your workloads and services.  In Grafana Cloud, The **Entity Catalog** view is populated from your OpenTelemetry services and other sources.
 
 ## Step 3: Correlating signals and context propagation
 
-How OpenTelemetry links traces, logs and metrics together.
+See how OpenTelemetry links traces, logs and metrics together.
 
 ### View context propagation across a request flow
 
@@ -105,13 +100,13 @@ OpenTelemetry includes mechanisms for correlating signals.
 
 1.  In Drilldown Traces, find a trace from the cartservice.
 
-2.  CLick on **Logs for this span** blue pill button.
+2.  Click on **Logs for this span** blue pill button.
 
 3.  A Logs query opens in a split view, with the specific log lines from the given trace.
 
-**Why it's important:** Correlating signals is crucial to helping you make sense of what an application is doing. When you're troubleshooting applications fully instrumented with OpenTelemetry, you can navigate from performance metrics, to specific requests and traces for that service, and then down to individual events logged by your application. This correlation can only take place because these signals carry the same attributes.
+**Why it's important:** Correlating signals is crucial to helping you make sense of what an application is doing. When you troubleshoot applications that are fully instrumented with OpenTelemetry, you can navigate from performance metrics, to specific requests and traces for that service, and then down to individual events logged by your application during a request. This correlation happens because these signals (metrics, logs, traces) carry the same attributes.
 
-**Example use case:** Finding log messages for failing spans. Why did a specific request fail, or why was it slow? What happened?
+**Real-world example:** Finding log messages for failing spans. With OTel, you can answer: why did a specific request fail, or why was it slow? What happened?
 
 ## Step 4: Performance analysis & troubleshooting
 
@@ -131,9 +126,9 @@ OpenTelemetry includes mechanisms for correlating signals.
 
 ### See service latency metrics
 
-Earlier in this workshop, you worked with metrics generated from trace spans, in Grafana Cloud. This solution brings a lot of flexibility and fidelity, since spans contain the full request context.
+Earlier in this workshop, you worked with metrics generated from trace spans, in Grafana Cloud. This solution brings a lot of flexibility and fidelity, since you retain both the full request context from your trace spans, as well as metrics for alerting.
 
-But OpenTelemetry also automatically instruments many common HTTP and gRPC server libraries, to emit standard latency metrics, such as `http.server.request.duration`, or `grpc.server.duration`. These are available in Grafana Cloud Metrics, with consistent naming (periods are converted to underscores).
+But OpenTelemetry also automatically instruments many common HTTP and gRPC server libraries, to emit standard latency metrics, such as <OtelSemconv type="metric">http.server.request.duration</OtelSemconv>, or <OtelSemconv type="metric">rpc.server.call.duration</OtelSemconv>. These metrics are available in Grafana Cloud Metrics, with consistent naming (remember periods in names are converted to underscores in Prometheus).
 
 1.  Navigate to **Drilldown -> Metrics**.
 
@@ -143,17 +138,19 @@ But OpenTelemetry also automatically instruments many common HTTP and gRPC serve
 
     *Note: Grafana Cloud automatically promotes many other resource attributes to Prometheus metric labels, automatically writing the complex join queries (involving `target_info`) for you in the background.*
 
-4.  Pick a service and click **Add to filters**. You can break down the metric even further, using standard OpenTelemetry resource attributes, like Kubernetes Pod name (`k8s_pod_name`), or service version (`service_version`).
+4.  Pick a service and click **Add to filters**. You can break down the metric even further, using standard OpenTelemetry resource attributes, like Kubernetes Pod name (<OtelSemconv>k8s.pod.name</OtelSemconv>), or service version (<OtelSemconv>service.version</OtelSemconv>).
+
+5.  **How many instances of this service were running in the last hour? What are the pod names?**
 
 :::opentelemetry-tip[Why 'job'?]
 
-OTel has a convention for mapping service details to Prometheus-style labels. Your `service.name` and `service.namespace` become the `job` label (like `production/checkoutservice`), so you can filter metrics using standard Prometheus queries like `{job="production/checkoutservice"}`.
+OTel has a convention for mapping service details to Prometheus-style labels. Your <OtelSemconv>service.name</OtelSemconv> and <OtelSemconv>service.namespace</OtelSemconv> become the `job` label (like `production/checkoutservice`), so you can filter metrics using standard Prometheus queries like `{job="production/checkoutservice"}`.
 
 For more info, see https://opentelemetry.io/docs/specs/otel/compatibility/prometheus_and_openmetrics/#resource-attributes-1
 
 :::
 
-### See standardised virtual machine metrics
+### Use standard virtual machine metrics
 
 - Talk about JVM or Go metrics here
 
