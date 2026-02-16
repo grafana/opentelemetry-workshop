@@ -42,7 +42,7 @@ OpenTelemetry can tell us a lot about workloads, and their underlying infrastruc
 
 - **What is the name of the Kubernetes node which the _checkoutservice_ is running on?** (Hint: this service is called from other services, so if you are searching Drilldown Traces, don't forget to change the filter to "All spans", not "Root spans")
 
-### Use OpenTelemetry semantic conventions
+### See OpenTelemetry semantic conventions
 
 Semantic conventions standardize the way that telemetry information is exported from applications. This makes it easier to visualise everything together.
 
@@ -52,13 +52,13 @@ Semantic conventions standardize the way that telemetry information is exported 
 
 3.  Open an example trace and examine the span attributes:
 
-    - **HTTP spans:** Look for <OtelSemconv type="span">http.request.method</OtelSemconv>, <OtelSemconv type="span">http.route</OtelSemconv>, <OtelSemconv type="span">http.response.status_code</OtelSemconv>
-    - **RPC spans:** Find <OtelSemconv type="span">rpc.system.name</OtelSemconv>, <OtelSemconv type="span">rpc.method</OtelSemconv>
-    - **Database spans:** Check for <OtelSemconv type="span">db.system.name</OtelSemconv>, <OtelSemconv type="span">db.query.text</OtelSemconv>, <OtelSemconv type="span">db.client.connection.pool.name</OtelSemconv>
+    - If **HTTP spans:** Look for <OtelSemconv type="span">http.request.method</OtelSemconv>, <OtelSemconv type="span">http.route</OtelSemconv>, <OtelSemconv type="span">http.response.status_code</OtelSemconv>
+    - If **RPC spans:** Find <OtelSemconv type="span">rpc.system.name</OtelSemconv>, <OtelSemconv type="span">rpc.method</OtelSemconv>
+    - If **Database spans:** Check for <OtelSemconv type="span">db.system.name</OtelSemconv>, <OtelSemconv type="span">db.query.text</OtelSemconv>, <OtelSemconv type="span">db.client.connection.pool.name</OtelSemconv>
 
 4.  Compare a couple of services. Notice how OpenTelemetry auto-instrumentation uses consistent attribute, span and metric naming, irrespective of the language or framework.
 
-5.  Navigate to **Drilldown -> Metrics**
+5.  Navigate to **Drilldown -> Metrics**.
 
 6.  Answer the question: **Which services use gRPC, and which use HTTP?**
     - Hint: OpenTelemetry conventions define some standard metric names, like <OtelSemconv type="metric">http.server.request.duration</OtelSemconv> and <OtelSemconv type="metric">rpc.server.call.duration</OtelSemconv>
@@ -150,15 +150,28 @@ For more info, see https://opentelemetry.io/docs/specs/otel/compatibility/promet
 
 :::
 
-### Use standard virtual machine metrics
+### Explore runtime environment metrics
 
-- Talk about JVM or Go metrics here
+Beyond application-level metrics, OpenTelemetry automatically instruments runtime environments to emit standardized metrics about the underlying platform - whether that's the JVM, .NET CLR, Node.js V8 engine, Go runtime, or others.
 
-**Explore OpenTelemetry metrics without having to write queries.**
+These metrics follow OpenTelemetry semantic conventions, allowing you to gain visibility into runtime performance characteristics that you might typically track, like memory usage, garbage collection, thread counts, and CPU utilization - all standardized across different languages and platforms.
 
-Which Java application uses the most memory?
+1.  Navigate to **Drilldown -> Metrics**.
 
-(Hint: Drilldown Metrics -> jvm_gc_xxx metrics -> group by "instance" or "job")
+2.  Search for runtime metrics by trying patterns like:
+    - `jvm_memory_*` for Java services
+    - `process_runtime_*` for various runtime metrics (.NET, Python)
+    - `go_*` for Go-specific metrics (like goroutines)
+
+3.  Select a metric (e.g., `jvm_memory_used_bytes`) and in the **job** panel, click **Select** to see a breakdown of this metric by namespace and service.
+
+4.  Add a filter for a specific service and explore how you can break down the metric using standard attributes like <OtelSemconv>jvm_memory_pool_name</OtelSemconv> or <OtelSemconv>jvm.memory.type</OtelSemconv>.
+
+5.  Try answering this question: **Which Java service is using the most heap memory?**
+
+6.  Try exploring metrics for other runtimes to understand health of the workloads in this system.
+
+**Why it's important:** Runtime metrics give you deep visibility into how your applications are performing at the platform level. With OpenTelemetry's standardized approach, you can build unified dashboards and alerts that work across your entire polyglot application landscape - no need to learn different instrumentation libraries or metric naming conventions for each language.
 
 
 
