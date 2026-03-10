@@ -70,7 +70,7 @@ Semantic conventions are agreed-upon naming standards for attributes, spans, and
 
 **Why it's important:** The semantic conventions of OpenTelemetry make your telemetry super-portable and queryable, across any service, regardless of the different languages or frameworks that your teams are using.
 
-**In Grafana Cloud:** OpenTelemetry can act like an automatic, living catalog of your production environment. By instrumenting your workloads with OpenTelemetry, and adopting its semantic conventions, you gain a standardized inventory of your workloads and services.  In Grafana Cloud, The **Entity Catalog** view is populated from your OpenTelemetry services and other sources.
+**In Grafana Cloud:** By instrumenting your workloads with OpenTelemetry, and adopting its semantic conventions, you gain a standardized inventory of your workloads and services.  In Grafana Cloud, The **Entity Catalog** view is populated from your services instrumented with OpenTelemetry, and other sources.
 
 ## Step 4: Understand context propagation
 
