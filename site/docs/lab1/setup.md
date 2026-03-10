@@ -4,15 +4,17 @@ sidebar_position: 1
 
 # 1.1. Initialize your environment
 
-## Step 1: Log on to Grafana
+## Step 1: Log on to Grafana (Sandbox)
 
-You've been given access to a Grafana Cloud instance for the purposes of this workshop.
+You've been given access to **two** Grafana Cloud instances for this workshop.
 
-1.  Go to the **Grafana URL** that you have been given (usually: `https://xxxxx.grafana.net`).
+In this lab, we'll be working in the **Sandbox** instance.
+
+1.  Go to the **Sandbox Grafana URL** that you have been given (looks like: `https://abcd12.grafana.net`).
 
 1.  If you are presented with a choice of sign-in options, click **Sign in with SSO**.
 
-1.  At the _Grafana Labs Workshops_ login screen, enter the **username** (not email) and **password** that you were given by your instructor.
+1.  At the _Grafana Labs Workshops_ login screen, enter the **username** (not email) and **password** that you received by email, or from your instructor.
 
     :::info
 
