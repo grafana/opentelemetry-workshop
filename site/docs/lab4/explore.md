@@ -48,7 +48,7 @@ Grafana Assistant is available throughout all of Grafana. Whenever you see the t
 
 ## Step 3: Using Assistant
 
-Grafana Assistant knows everything about Grafana and everything in the surrounding ecosystem of Grafana. This ranges from Instrumentation, Exploration, Investigation, Root Cause Analysis and general usage of Grafana. You can ask it to create things like alerts, dashboards, querys. You can ask it to share best practices with you so you can learn and enhance your skill set. You can ask it to connect to external systems via MCP and so much more. You can even bring your own context through Skills, rules, memories and more. Although these are out of scope for this workshop.
+Grafana Assistant knows everything about Grafana and everything in the surrounding ecosystem of Grafana. This ranges from Instrumentation, Exploration, Investigation, Root Cause Analysis and general usage of Grafana. You can ask it to create things like alerts, dashboards, queries. You can ask it to share best practices with you so you can learn and enhance your skill set. You can ask it to connect to external systems via MCP and so much more. You can even bring your own context through Skills, rules, memories and more. Although these are out of scope for this workshop.
 
 ___NOTE___: Due to the variable nature of an LLM assistant, the results will not always look the same between users or match what we found in previous exercises. If Assistant doesn't do what you want it to do, prompt it some more to nudge it in the right direction.
 
@@ -64,7 +64,7 @@ Give it a few minutes to start degrading....
 
 In the mean time, let's understand the instrumentation health of our traces.
 
-- **Explore semenatic correctness**
+- **Explore semantic correctness**
 Ask Assistant something like `Are my services using opentelemetry semantics correctly?` - it will analyse the data and understand what attributes are being used. You can see here that it advises us that the application is using the old semantic convention. It outlines what's correct and the attribute that should have been used instead.
 
 ![alt text](/img/assistant_semanticcorrectness.png)
@@ -74,12 +74,12 @@ Now things should be nice and broken....
 
 Ask assistant how healthy each of the services running in the `ditl-demo-prod` k8s namespace are. 
 
-This is a more indepth question and will likely spin up multiple agents to do this asyncronously. As with before, it will look for all the services from within Knowledge Graph, look to understand what data sources are available and then query metrics, logs and traces to determine the health. For each tool call, you can inspect the paramters and queries as well as the thiking for each step of the investigation. As part of this, it will likely check to see if any alerts are firing and the state of SLOs also.
+This is a more indepth question and will likely spin up multiple agents to do this asynchronously. As with before, it will look for all the services from within Knowledge Graph, look to understand what data sources are available and then query metrics, logs and traces to determine the health. For each tool call, you can inspect the parameters and queries as well as the thinking for each step of the investigation. As part of this, it will likely check to see if any alerts are firing and the state of SLOs also.
 
 The result looks something like:
 ![alt text](/img/assistant_health.png)
 
-From here, you can ask follow up questions, you can ask it to create alerts based on conditions and much more. As an example, you could as it to create a dashboard to summarise these issues. Let's continue with the debug process. This environment has been connected to the github repo. Let's ask it to investigate why the product catalog service is crash looping. Doing so results in a great investigative process
+From here, you can ask follow up questions, you could ask it to create alerts based on conditions and much more. As an example, you could as it to create a dashboard to summarise these issues. Let's continue with the debug process. This environment has been connected to the github repo. Let's ask it to investigate why the product catalog service is crash looping. Doing so results in a great investigative process
 ![alt text](/img/assistant_productacatalog.png)
 
 From here, you can ask a PR to be raised or give you an example of what to update the code to be!
