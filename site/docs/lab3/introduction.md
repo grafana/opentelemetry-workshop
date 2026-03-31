@@ -2,9 +2,9 @@
 sidebar_position: 1
 ---
 
-# 4.1. Introduction
+# 3.1. Introduction
 
-For this fourth lab, we are going to have a play with the fully configured reference environment with Grafana Assistant
+For this third lab, we're going to explore a fully configured reference environment using Grafana Assistant.
 
-Click to the next module to read about the reference environment mission.
+Click to the next module to get started.
 

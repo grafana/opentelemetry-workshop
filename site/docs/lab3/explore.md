@@ -6,11 +6,11 @@ import OtelSemconv from '@site/src/components/OtelSemconv';
 
 # 3.2. Mission A: Investigate a fully instrumented system with Grafana Assistant
 
-In this mission, you'll investigate a fully instrumented microservices application, in Grafana Cloud with Grafana Assistant.
+In this mission, you'll investigate a fully instrumented microservices application in Grafana Cloud with Grafana Assistant.
 
-This is the [OpenTelemetry Demo][1] - a production-grade system where services are exporting OpenTelemetry traces, metrics and logs. 
+This is the [OpenTelemetry Demo][1] — a production-grade system where services are exporting OpenTelemetry traces, metrics and logs.
 
-Your goal in this mission is to use Grafana Assistant to understand the system, identity patterns, and see how we can use Grafana Assistant to gain useful insights into the system.
+Your goal in this mission is to use Grafana Assistant to understand the system, identify patterns, and gain useful insights.
 
 ![Astronomy Shop homepage](/img/oteldemo_homepage.png)
 
@@ -26,21 +26,23 @@ Log on to the environment to get started:
 
 ## Step 2: How to access Grafana Assistant
 
-In this step, you'll see the many ways you can access Grafana Assistant from within Grafana. 
+In this step, you'll see the many ways you can access Grafana Assistant from within Grafana.
 
-### Top bar 
+### Top bar
 
-The Grafana Assistant can be opened from the always-present top bar of Grafana
-![alt text](/img/assistant_topbar.png)
+Grafana Assistant can be opened from the always-present top bar of Grafana.
 
-This opens a side drawer within Grafana and you can always interact with it this way
+![Grafana Assistant in the top bar](/img/assistant_topbar.png)
+
+This opens a side drawer within Grafana, and you can always interact with it this way.
 
 ### Main Menu
 
-Within Grafana's Main Menu you can see an item called Assistant, clicking that takes you to the Assistant App. 
-![alt text](img/assistant_app.png)
+Within Grafana's Main Menu, you can see an item called Assistant. Clicking that takes you to the Assistant App.
 
-From here we can use it like a search bar and interact with Assistant
+![Grafana Assistant app](/img/assistant_app.png)
+
+From here, you can use it like a search bar and interact with Assistant.
 
 ### Everywhere else
 
@@ -48,38 +50,48 @@ Grafana Assistant is available throughout all of Grafana. Whenever you see the t
 
 ## Step 3: Using Assistant
 
-Grafana Assistant knows everything about Grafana and everything in the surrounding ecosystem of Grafana. This ranges from Instrumentation, Exploration, Investigation, Root Cause Analysis and general usage of Grafana. You can ask it to create things like alerts, dashboards, queries. You can ask it to share best practices with you so you can learn and enhance your skill set. You can ask it to connect to external systems via MCP and so much more. You can even bring your own context through Skills, rules, memories and more. Although these are out of scope for this workshop.
+Grafana Assistant knows everything about Grafana and its surrounding ecosystem. This ranges from instrumentation, exploration, investigation, root cause analysis and general usage of Grafana. You can ask it to create alerts, dashboards and queries. You can ask it to share best practices so you can learn and enhance your skill set. You can ask it to connect to external systems via MCP, and much more. You can even bring your own context through Skills, rules, memories and more — although these are out of scope for this workshop.
 
-___NOTE___: Due to the variable nature of an LLM assistant, the results will not always look the same between users or match what we found in previous exercises. If Assistant doesn't do what you want it to do, prompt it some more to nudge it in the right direction.
+:::note
+Due to the variable nature of an LLM assistant, the results will not always look the same between users or match what we found in previous exercises. If Assistant doesn't do what you want it to do, prompt it some more to nudge it in the right direction.
+:::
 
-- **How many services are running?** 
-Open Assistant and ask it "How many services are running? For each service, tell me it's name, version, cloud provider, region and k8s node it's running in".
+### How many services are running?
 
-This shows how Assistant thinks through the request, "thinking" is always shown. You can then see how it queries Grafana itself. It might query metrics, knowledge graph, logs, traces, profiles and more. 
+Open Assistant and ask it "How many services are running? For each service, tell me its name, version, cloud provider, region and k8s node it's running in".
 
-- **Let's break something**
-To make for a more interesting scenario, let's break a few things. Go to `Field Eng Otel Environment` dashboard folder and open the `Feature Flags` dashboard. In our demo environment, we've added many failure scenarios so things break in wonderful ways. Turn on the `productCatalogReadFromPostgres` and `productCatalogStopClosingPostgresConnections` feature flags by pressing the `enable` button.
+This shows how Assistant thinks through the request — "thinking" is always shown. You can then see how it queries Grafana itself. It might query metrics, knowledge graph, logs, traces, profiles and more.
 
-Give it a few minutes to start degrading....
+### Let's break something
 
-In the mean time, let's understand the instrumentation health of our traces.
+To make for a more interesting scenario, let's break a few things. Go to the `Field Eng Otel Environment` dashboard folder and open the `Feature Flags` dashboard. In our demo environment, we've added many failure scenarios so things break in wonderful ways. Turn on the `productCatalogReadFromPostgres` and `productCatalogStopClosingPostgresConnections` feature flags by pressing the `enable` button.
 
-- **Explore semantic correctness**
-Ask Assistant something like `Are my services using opentelemetry semantics correctly?` - it will analyse the data and understand what attributes are being used. You can see here that it advises us that the application is using the old semantic convention. It outlines what's correct and the attribute that should have been used instead.
+Give it a few minutes to start degrading...
 
-![alt text](/img/assistant_semanticcorrectness.png)
+In the meantime, let's understand the instrumentation health of our traces.
 
-- **Are they healthy?**
-Now things should be nice and broken....
+### Explore semantic correctness
 
-Ask assistant how healthy each of the services running in the `ditl-demo-prod` k8s namespace are. 
+Ask Assistant something like `Are my services using OpenTelemetry semantics correctly?` — it will analyse the data and understand what attributes are being used. You can see here that it advises us that the application is using the old semantic convention. It outlines what's correct and the attribute that should have been used instead.
 
-This is a more indepth question and will likely spin up multiple agents to do this asynchronously. As with before, it will look for all the services from within Knowledge Graph, look to understand what data sources are available and then query metrics, logs and traces to determine the health. For each tool call, you can inspect the parameters and queries as well as the thinking for each step of the investigation. As part of this, it will likely check to see if any alerts are firing and the state of SLOs also.
+![Assistant checking semantic correctness](/img/assistant_semanticcorrectness.png)
+
+### Are they healthy?
+
+Now things should be nice and broken...
+
+Ask Assistant how healthy each of the services running in the `ditl-demo-prod` k8s namespace are.
+
+This is a more in-depth question and will likely spin up multiple agents to do this asynchronously. As before, it will look for all the services from within Knowledge Graph, look to understand what data sources are available and then query metrics, logs and traces to determine the health. For each tool call, you can inspect the parameters and queries as well as the thinking for each step of the investigation. As part of this, it will likely check to see if any alerts are firing and the state of SLOs also.
 
 The result looks something like:
-![alt text](/img/assistant_health.png)
 
-From here, you can ask follow up questions, you could ask it to create alerts based on conditions and much more. As an example, you could as it to create a dashboard to summarise these issues. Let's continue with the debug process. This environment has been connected to the github repo. Let's ask it to investigate why the product catalog service is crash looping. Doing so results in a great investigative process
-![alt text](/img/assistant_productacatalog.png)
+![Assistant showing service health](/img/assistant_health.png)
 
-From here, you can ask a PR to be raised or give you an example of what to update the code to be!
+From here, you can ask follow-up questions — you could ask it to create alerts based on conditions and much more. As an example, you could ask it to create a dashboard to summarise these issues. Let's continue with the debug process. This environment has been connected to the GitHub repo. Let's ask it to investigate why the product catalog service is crash looping. Doing so results in a great investigative process:
+
+![Assistant investigating the product catalog](/img/assistant_productacatalog.png)
+
+From here, you can ask for a PR to be raised, or ask for an example of what to update the code to!
+
+[1]: https://github.com/grafana/opentelemetry-demo

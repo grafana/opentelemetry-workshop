@@ -2,9 +2,9 @@
 sidebar_position: 1
 ---
 
-# 3.1. Introduction
+# 4.1. Introduction
 
-For this third lab, we're letting you choose your own mission.
+For this fourth lab, we're letting you choose your own mission.
 
 You can either:
 
