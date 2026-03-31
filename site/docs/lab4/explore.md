@@ -4,13 +4,13 @@ sidebar_position: 2
 
 import OtelSemconv from '@site/src/components/OtelSemconv';
 
-# 3.2. Mission A: Investigate a fully instrumented system with Grafana Assistant
+# 3.2. Mission A: Investigate a fully instrumented system
 
-In this mission, you'll investigate a fully instrumented microservices application, in Grafana Cloud with Grafana Assistant.
+In this mission, you'll investigate a fully instrumented microservices application, in Grafana Cloud.
 
 This is the [OpenTelemetry Demo][1] - a production-grade system where services are exporting OpenTelemetry traces, metrics and logs. 
 
-Your goal in this mission is to use Grafana Assistant to understand the system, identity patterns, and see how we can use Grafana Assistant to gain useful insights into the system.
+Your goal in this mission is to use Grafana Cloud to understand the system, identity patterns, and see how OpenTelemetry's _semantic conventions_ are incredibly useful when operating at scale, across many languages and frameworks.   
 
 ![Astronomy Shop homepage](/img/oteldemo_homepage.png)
 
@@ -24,62 +24,159 @@ Log on to the environment to get started:
 
 1.  At the _Authentication_ login screen, enter the **username** (not email) and **password** that you received by email, or from your instructor.
 
-## Step 2: How to access Grafana Assistant
+## Step 2: Discover your services
 
-In this step, you'll see the many ways you can access Grafana Assistant from within Grafana. 
+In this step, you'll use OpenTelemetry resource attributes to understand what services are running, where they're deployed, and how they're configured.
 
-### Top bar 
+### Explore workloads and infrastructure
 
-The Grafana Assistant can be opened from the always-present top bar of Grafana
-![alt text](/img/assistant_topbar.png)
+OpenTelemetry can tell us a lot about workloads, and their underlying infrastructure. Explore this environment and see if you can answer these questions:
 
-This opens a side drawer within Grafana and you can always interact with it this way
+- **How many services are running?** (Hint: use the Entity Catalog)
 
-### Main Menu
+- **Which version of each service is running?** (Hint: find a trace use the <OtelSemconv>service.version</OtelSemconv> attribute, or use the Entity Catalog and add Service Version as a column)
 
-Within Grafana's Main Menu you can see an item called Assistant, clicking that takes you to the Assistant App. 
-![alt text](img/assistant_app.png)
+- **In which cloud provider and region are these services deployed?** (Hint: search for traces and look in the *resource attributes*, or find the information in Entity Catalog)
 
-From here we can use it like a search bar and interact with Assistant
+- **What is the name of the Kubernetes node which the _checkoutservice_ is running on?** (Hint: this service is called from other services, so if you are searching Drilldown Traces, don't forget to change the filter to "All spans", not "Root spans")
 
-### Everywhere else
+**Why it's important:** Resource attributes give you a complete inventory of your infrastructure - what's running, where it's running, and how it's configured. This forms the foundation for service discovery and helps you understand the topology of your distributed system.
 
-Grafana Assistant is available throughout all of Grafana. Whenever you see the two stars, like in the top bar, you can click them and Assistant will be there to help you.
+## Step 3: Explore semantic conventions
 
-## Step 3: Using Assistant
+Now that you know what services exist, let's explore how OpenTelemetry standardizes the way telemetry is captured and exported.
 
-Grafana Assistant knows everything about Grafana and everything in the surrounding ecosystem of Grafana. This ranges from Instrumentation, Exploration, Investigation, Root Cause Analysis and general usage of Grafana. You can ask it to create things like alerts, dashboards, queries. You can ask it to share best practices with you so you can learn and enhance your skill set. You can ask it to connect to external systems via MCP and so much more. You can even bring your own context through Skills, rules, memories and more. Although these are out of scope for this workshop.
+Semantic conventions are agreed-upon naming standards for attributes, spans, and metrics. They make telemetry portable and queryable across any service, regardless of language or framework.
 
-___NOTE___: Due to the variable nature of an LLM assistant, the results will not always look the same between users or match what we found in previous exercises. If Assistant doesn't do what you want it to do, prompt it some more to nudge it in the right direction.
+1.  Navigate to **Drilldown -> Traces**.
 
-- **How many services are running?** 
-Open Assistant and ask it "How many services are running? For each service, tell me it's name, version, cloud provider, region and k8s node it's running in".
+2.  Find traces for the **ditl-demo-frontend-client** service.
 
-This shows how Assistant thinks through the request, "thinking" is always shown. You can then see how it queries Grafana itself. It might query metrics, knowledge graph, logs, traces, profiles and more. 
+3.  Open an example trace and examine the span attributes:
 
-- **Let's break something**
-To make for a more interesting scenario, let's break a few things. Go to `Field Eng Otel Environment` dashboard folder and open the `Feature Flags` dashboard. In our demo environment, we've added many failure scenarios so things break in wonderful ways. Turn on the `productCatalogReadFromPostgres` and `productCatalogStopClosingPostgresConnections` feature flags by pressing the `enable` button.
+    - **HTTP spans:** Look for <OtelSemconv type="span">http.request.method</OtelSemconv>, <OtelSemconv type="span">http.route</OtelSemconv>, <OtelSemconv type="span">http.response.status_code</OtelSemconv>
+    - **RPC spans:** Find <OtelSemconv type="span">rpc.system.name</OtelSemconv>, <OtelSemconv type="span">rpc.method</OtelSemconv>
+    - **Database spans:** Check for <OtelSemconv type="span">db.system.name</OtelSemconv>, <OtelSemconv type="span">db.query.text</OtelSemconv>, <OtelSemconv type="span">db.client.connection.pool.name</OtelSemconv>
 
-Give it a few minutes to start degrading....
+4.  Compare a couple of services. Notice how OpenTelemetry auto-instrumentation uses consistent attribute, span and metric naming, irrespective of the language or framework.
 
-In the mean time, let's understand the instrumentation health of our traces.
+5.  Navigate to **Drilldown -> Metrics**.
 
-- **Explore semantic correctness**
-Ask Assistant something like `Are my services using opentelemetry semantics correctly?` - it will analyse the data and understand what attributes are being used. You can see here that it advises us that the application is using the old semantic convention. It outlines what's correct and the attribute that should have been used instead.
+6.  Answer the question: **Which services use gRPC, and which use HTTP?**
+    - Hint: OpenTelemetry conventions define some standard metric names, like <OtelSemconv type="metric">http.server.request.duration</OtelSemconv> and <OtelSemconv type="metric">rpc.server.call.duration</OtelSemconv>
+    - Try using Drilldown Metrics to find the known metrics for HTTP servers and RPC servers, and note which label values you see.
+        - Remember: In Grafana Cloud, OpenTelemetry resource attributes are **promoted** to Prometheus labels.
+    - Check your analysis by inspecting traces from each service and look at its spans - are they decorated with <OtelSemconv type="span">rpc.service</OtelSemconv>, <OtelSemconv type="span">rpc.method</OtelSemconv> or <OtelSemconv type="span">http.method</OtelSemconv>, <OtelSemconv type="span">http.route</OtelSemconv>?
 
-![alt text](/img/assistant_semanticcorrectness.png)
+**Why it's important:** The semantic conventions of OpenTelemetry make your telemetry super-portable and queryable, across any service, regardless of the different languages or frameworks that your teams are using.
 
-- **Are they healthy?**
-Now things should be nice and broken....
+**In Grafana Cloud:** By instrumenting your workloads with OpenTelemetry, and adopting its semantic conventions, you gain a standardized inventory of your workloads and services.  In Grafana Cloud, The **Entity Catalog** view is populated from your services instrumented with OpenTelemetry, and other sources.
 
-Ask assistant how healthy each of the services running in the `ditl-demo-prod` k8s namespace are. 
+## Step 4: Understand context propagation
 
-This is a more indepth question and will likely spin up multiple agents to do this asynchronously. As with before, it will look for all the services from within Knowledge Graph, look to understand what data sources are available and then query metrics, logs and traces to determine the health. For each tool call, you can inspect the parameters and queries as well as the thinking for each step of the investigation. As part of this, it will likely check to see if any alerts are firing and the state of SLOs also.
+Now let's see how OpenTelemetry connects the dots across your distributed system. Context propagation is the mechanism that allows traces to span multiple services, creating a complete picture of a request's journey.
 
-The result looks something like:
-![alt text](/img/assistant_health.png)
+### Follow a request across services
 
-From here, you can ask follow up questions, you could ask it to create alerts based on conditions and much more. As an example, you could as it to create a dashboard to summarise these issues. Let's continue with the debug process. This environment has been connected to the github repo. Let's ask it to investigate why the product catalog service is crash looping. Doing so results in a great investigative process
-![alt text](/img/assistant_productacatalog.png)
+1.  In Drilldown Traces, change the Filters to **All spans** and then search for traces including the **cartservice**.
 
-From here, you can ask a PR to be raised or give you an example of what to update the code to be!
+1.  Click on a Trace to expand the view.
+
+    Notice how the trace view shows the end-to-end flow of the trace that included calls to cartservice. The request flow will look something like this:
+
+    ditl-demo-frontend-client → frontendproxy → cartservice → flagd
+
+    Notice how a single **trace ID** combines all of these interactions into a single flow.
+
+3.  Check out the trace timeline -- notice how you can see the latency of each service hop.
+
+**Why it's important:** Context is the essential piece of information that makes distributed tracing work. Without passing (propagating) context between services, you'd only be able to see a bunch of disconnected traces. 
+
+Context propagation ensures that each service passes some linking information to the next service. This allows Grafana Cloud to link the traces together, so you can see how a single request can touch many downstream services.
+
+## Step 5: Correlate signals
+
+Beyond connecting traces _across services_, OpenTelemetry enables correlation _between different types_ of signals - traces, logs, and metrics. This allows you to jump seamlessly from one signal type to another, when you're investigating issues.
+
+### Navigate from traces to logs
+
+1.  In Drilldown Traces, find a trace from the cartservice.
+
+2.  Click on **Logs for this span** blue pill button.
+
+3.  A Logs query opens in a split view, with the specific log lines from the given trace.
+
+**Why it's important:** Correlating signals is crucial to helping you make sense of what an application is doing. When you troubleshoot applications that are fully instrumented with OpenTelemetry, you can navigate from performance metrics, to specific requests and traces for that service, and then down to individual events logged by your application during a request. This correlation happens because these signals (metrics, logs, traces) carry the same attributes.
+
+**Real-world example:** Finding log messages for failing spans. With OTel, you can answer: why did a specific request fail, or why was it slow? What happened?
+
+## Step 6: Analyze performance and troubleshoot
+
+Now that you understand how to discover services, interpret semantic conventions, follow distributed traces, and correlate signals, let's put it all together to analyze performance and troubleshoot issues.
+
+### Visualize service dependencies
+
+1.  From the main menu, click on **Observability -> Entity Catalog** to open the Entity Catalog.
+
+1.  In the **Environment** dropdown, clear any existing selections and choose **production**.
+
+1.  Now you should see all the production services that make up our Astronomy Shop.
+
+1.  Click on the **Service Map** tab to see the service topology in a single view.
+
+1.  Find a service with high error rates, identified by a red circle around the entity.
+
+1.  For the service that is failing, answer this question: is it the service itself that is failing, or one of its dependencies?
+
+### Analyze service latency with standard metrics
+
+Earlier in this workshop, you worked with metrics generated from trace spans in Grafana Cloud. This approach provides flexibility and fidelity, since you retain both the full request context from trace spans, in addition to metrics for alerting.
+
+Additionally, OpenTelemetry automatically instruments many common HTTP and gRPC server libraries to emit standardized latency metrics, such as <OtelSemconv type="metric">http.server.request.duration</OtelSemconv> and <OtelSemconv type="metric">rpc.server.call.duration</OtelSemconv>. These metrics are available in Grafana Cloud Metrics, with consistent naming (remember: periods in names are converted to underscores in Prometheus).
+
+1.  Navigate to **Drilldown -> Metrics**.
+
+2.  Search for the metric `rpc_server_duration_milliseconds_bucket`.
+
+3.  In the **job** panel, click on the **Select** button to see the histogram broken down by service.
+
+    *Note: Grafana Cloud automatically promotes many other resource attributes to Prometheus metric labels, automatically writing the complex join queries (involving `target_info`) for you in the background.*
+
+4.  Pick a service and click **Add to filters**. You can break down the metric even further, using standard OpenTelemetry resource attributes, like Kubernetes Pod name (<OtelSemconv>k8s.pod.name</OtelSemconv>), or service version (<OtelSemconv>service.version</OtelSemconv>).
+
+5.  **How many instances of this service were running in the last hour? What are the pod names?**
+
+:::opentelemetry-tip[Why 'job'?]
+
+OTel has a convention for mapping service details to Prometheus-style labels. Your <OtelSemconv>service.name</OtelSemconv> and <OtelSemconv>service.namespace</OtelSemconv> become the `job` label (like `production/checkoutservice`), so you can filter metrics using standard Prometheus queries like `{job="production/checkoutservice"}`.
+
+For more info, see https://opentelemetry.io/docs/specs/otel/compatibility/prometheus_and_openmetrics/#resource-attributes-1
+
+:::
+
+### Explore runtime environment metrics
+
+Beyond application-level metrics, OpenTelemetry automatically instruments runtime environments to emit standardized metrics about the underlying platform - whether that's the JVM, .NET CLR, Node.js V8 engine, Go runtime, or others.
+
+These metrics follow OpenTelemetry semantic conventions, allowing you to gain visibility into runtime performance characteristics that you might typically track, like memory usage, garbage collection, thread counts, and CPU utilization - all standardized across different languages and platforms.
+
+1.  Navigate to **Drilldown -> Metrics**.
+
+2.  Search for runtime metrics by trying patterns like:
+    - `jvm_memory_*` for Java services
+    - `process_runtime_*` for various runtime metrics (.NET, Python)
+    - `go_*` for Go-specific metrics (like goroutines)
+
+3.  Select a metric (e.g., `jvm_memory_used_bytes`) and in the **job** panel, click **Select** to see a breakdown of this metric by namespace and service.
+
+4.  Add a filter for a specific service and explore how you can break down the metric using standard attributes like <OtelSemconv>jvm_memory_pool_name</OtelSemconv> or <OtelSemconv>jvm.memory.type</OtelSemconv>.
+
+5.  Try answering this question: **Which Java service is using the most heap memory?**
+
+6.  Try exploring metrics for other runtimes to understand health of the workloads in this system.
+
+**Why it's important:** Runtime metrics give you deep visibility into how your applications are performing at the platform level. With OpenTelemetry's standardized approach, you can build unified dashboards and alerts that work across your entire polyglot application landscape - no need to learn different instrumentation libraries or metric naming conventions for each language.
+
+
+
+[1]: https://github.com/grafana/opentelemetry-demo 

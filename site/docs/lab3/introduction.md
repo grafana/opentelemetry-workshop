@@ -2,17 +2,9 @@
 sidebar_position: 1
 ---
 
-# 3.1. Introduction
+# 4.1. Introduction
 
-For this third lab, we're letting you choose your own mission.
-
-You can either:
-
-- Dive into a fully configured reference environment, or
-
-- Add custom telemetry to _gameserver_
-
-If you're not sure which you'd like to do, have a read of both of the docs and then decide!
+For this fourth lab, we are going to have a play with the fully configured reference environment with Grafana Assistant
 
 Click to the next module to read about the reference environment mission.
 
