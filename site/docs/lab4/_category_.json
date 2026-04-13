@@ -1,8 +1,8 @@
 {
-  "label": "[Optional]Lab 4 - Missions",
+  "label": "Lab 4 - Extra Missions",
   "position": 1,
   "link": {
     "type": "generated-index",
-    "description": "Workflows built around OpenTelemetry in Grafana Cloud."
+    "description": "Optional extra missions around OpenTelemetry in Grafana Cloud."
   }
 }

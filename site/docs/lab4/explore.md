@@ -4,7 +4,7 @@ sidebar_position: 2
 
 import OtelSemconv from '@site/src/components/OtelSemconv';
 
-# 3.2. Mission A: Investigate a fully instrumented system
+# 4.2. Mission A: Investigate a fully instrumented system
 
 In this mission, you'll investigate a fully instrumented microservices application, in Grafana Cloud.
 
