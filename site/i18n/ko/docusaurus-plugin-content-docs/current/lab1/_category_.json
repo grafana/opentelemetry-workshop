@@ -1,0 +1,8 @@
+{
+  "label": "Lab 1 - 계측, 수집 및 내보내기",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "주요 텔레메트리 신호와 애플리케이션 계측에 대해 이해합니다."
+  }
+}

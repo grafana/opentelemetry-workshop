@@ -1,0 +1,8 @@
+{
+  "label": "Lab 2 - 추가 서비스 탐색 및 추가",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "두 번째 서비스를 계측하고 Grafana에서 OpenTelemetry 신호를 탐색합니다."
+  }
+}

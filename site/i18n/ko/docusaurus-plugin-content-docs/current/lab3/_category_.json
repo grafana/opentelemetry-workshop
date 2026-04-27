@@ -1,0 +1,8 @@
+{
+  "label": "Lab 3 - 미션",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Grafana Cloud에서 OpenTelemetry를 중심으로 구축된 워크플로우."
+  }
+}
