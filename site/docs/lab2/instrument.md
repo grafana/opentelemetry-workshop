@@ -49,7 +49,7 @@ Let's run the _gameserver_:
 1.  Open a new terminal (**Terminal -> New Terminal**), and type the following to copy the second project into your persistent workspace, then enter the new directory:
 
     ```
-     cd /source/gameserver
+     cd source/gameserver
     ```
 
 1.  In the project Explorer tree, find the file `source/gameserver/otel.go` and open it, to inspect the code.
@@ -76,7 +76,7 @@ Let's run the _gameserver_:
 1.  In an unused terminal, change to the `persisted/gameserver` directory and run _gameserver_. It might take a minute or two to start, as your code will need to be compiled:
 
     ```
-    cd /source/gameserver
+    cd source/gameserver
 
     ./run.sh
     ```
@@ -99,7 +99,7 @@ Let's run the _gameserver_:
     In a new terminal, run the following commands:
 
     ```
-    cd /source/gameserver
+    cd source/gameserver
 
     k6 run loadtest.js
     ```
