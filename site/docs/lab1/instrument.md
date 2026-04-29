@@ -111,7 +111,7 @@ Complete the following steps:
 
     If you're not familiar with Java, the `-javaagent:` argument tells the Java process to attach an agent when the program starts. Agents are other Java programs which can interact and inspect the program that's running.
 
-1.  Now, start the application again by opening a new terminal (**Terminal -> New Terminal**) and typing:
+1.  If the rolldice app is still running from the previous lab, then stop it. Start the application again, with the OpenTelemetry Java agent attached, by opening a new terminal (**Terminal -> New Terminal**) and typing:
 
     ```shell
     cd persisted/rolldice
