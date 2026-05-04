@@ -50,7 +50,7 @@ Semantic conventions are agreed-upon naming standards for attributes, spans, and
 
 1.  Navigate to **Drilldown -> Traces**.
 
-2.  Find traces for the **ditl-demo-frontend-client** service.
+2.  Find traces for the **ecommerce** service - this is the website client.
 
 3.  Open an example trace and examine the span attributes:
 
@@ -84,7 +84,7 @@ Now let's see how OpenTelemetry connects the dots across your distributed system
 
     Notice how the trace view shows the end-to-end flow of the trace that included calls to cartservice. The request flow will look something like this:
 
-    ditl-demo-frontend-client → frontendproxy → cartservice → flagd
+    ecommerce (website) → frontendproxy → cartservice → flagd
 
     Notice how a single **trace ID** combines all of these interactions into a single flow.
 
