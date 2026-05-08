@@ -1,8 +1,8 @@
 {
-  "label": "Lab 3 - Missions",
+  "label": "Lab 3 - AI investigation with Grafana Assistant",
   "position": 1,
   "link": {
     "type": "generated-index",
-    "description": "Workflows built around OpenTelemetry in Grafana Cloud."
+    "description": "Using Grafana Assistant, explore AI-generated insights into a demo environment."
   }
 }
