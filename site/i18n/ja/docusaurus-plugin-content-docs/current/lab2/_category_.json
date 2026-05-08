@@ -1,0 +1,8 @@
+{
+  "label": "ラボ 2 - 探索してサービスを追加",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "2つ目のサービスを計装し、Grafana で OpenTelemetry シグナルを探索します。"
+  }
+}
