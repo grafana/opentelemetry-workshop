@@ -1,0 +1,8 @@
+{
+  "label": "ラボ 1 - 計装、収集、エクスポート",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "主要なテレメトリーシグナルとアプリケーション計装を理解します。"
+  }
+}

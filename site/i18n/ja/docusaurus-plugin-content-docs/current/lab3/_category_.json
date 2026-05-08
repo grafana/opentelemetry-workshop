@@ -1,0 +1,8 @@
+{
+  "label": "ラボ 3 - ミッション",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Grafana Cloud における OpenTelemetry を中心としたワークフロー。"
+  }
+}
