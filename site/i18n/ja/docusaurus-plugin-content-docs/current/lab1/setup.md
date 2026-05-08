@@ -4,9 +4,9 @@ sidebar_position: 1
 
 # 1.1. 環境を初期化する
 
-## ステップ 1: 無料アカウントを作成して Grafana cloud にログインする
+## ステップ 1: 無料アカウントを作成して Grafana Cloud にログインする
 
-grafana labs で登録してください。
+Grafana Labs で登録してください。
 
 1.  アカウント登録のために、この URL [register to grafana](https://grafana.com/auth/sign-up/create-user?pg=login) にアクセスします。
 
