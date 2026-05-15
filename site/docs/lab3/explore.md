@@ -96,7 +96,7 @@ Now things should be nice and broken...
 
 Ask Assistant:
 
-> How healthy are the services in the `ditl-demo-prod` k8s namespace?
+> How healthy are the services in the `ecommerce-prod` k8s namespace?
 
 This is a more in-depth question, and Assistant will likely spin up multiple agents to do this asynchronously. As before, it will look for all the services in Knowledge Graph, look to understand what data sources are available and then query metrics, logs and traces to determine the health. 
 
